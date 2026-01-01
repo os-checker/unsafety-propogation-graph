@@ -50,3 +50,10 @@ impl Function {
         }
     }
 }
+
+#[derive(Debug, Serialize)]
+pub struct Adt {
+    pub name: String,
+    pub span: String,
+    pub src: String,
+}
