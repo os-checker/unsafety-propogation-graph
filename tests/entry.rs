@@ -15,7 +15,7 @@ fn run_mode(dir: &str) {
         src_base: PathBuf::from(dir),
         build_base: PROFILE_PATH.join(dir),
         rustc_path: PROFILE_PATH.join(RUSTC_DRIVER),
-        target_rustcflags: Some("--crate-type=lib".to_owned()),
+        target_rustcflags: Some(format!("--crate-type=lib {}", flag_remap_path_prefix())),
         ..Default::default()
     };
 
@@ -33,6 +33,23 @@ static PROFILE_PATH: LazyLock<PathBuf> = LazyLock::new(|| {
     let profile_path = deps_path.parent().unwrap();
     profile_path.into()
 });
+
+fn flag_remap_path_prefix() -> String {
+    let output = std::process::Command::new("rustc")
+        .args(["--print=sysroot"])
+        .output()
+        .unwrap();
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    if !output.status.success() {
+        let stderr = String::from_utf8(output.stderr).unwrap();
+        panic!("`rustc --print=sysroot` fails\nstderr={stderr}\nstdout={stdout}");
+    }
+    // sysroot should be /home/gh-zjp-CN/.rustup/toolchains/nightly-2025-12-06-aarch64-unknown-linux-gnu
+    // Replace           /home/gh-zjp-CN/.rustup/toolchains/nightly-2025-12-06-aarch64-unknown-linux-gnu/lib/rustlib/src/rust/library
+    // by $SYSROOT.
+    let sysroot = stdout.trim();
+    format!("--remap-path-prefix={sysroot}/lib/rustlib/src/rust/library=$SYSROOT")
+}
 
 #[test]
 fn compile_test() {

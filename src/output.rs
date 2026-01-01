@@ -25,7 +25,7 @@ pub struct Function {
 impl Function {
     pub fn new(fn_def: FnDef, info: &FnInfo, body: &Body, tcx: TyCtxt) -> Self {
         let name = fn_def.name();
-        let span = body.span;
+        let [span, src] = span_to_src(body.span, tcx);
         let mir = {
             let mut buf = Vec::with_capacity(1024);
             _ = body.dump(&mut buf, &name);
@@ -48,8 +48,8 @@ impl Function {
                     )
                 })
                 .collect(),
-            span: span.diagnostic(),
-            src: span_to_src(span, tcx),
+            span,
+            src,
             mir,
         }
     }
@@ -67,14 +67,14 @@ pub struct Adt {
 
 impl Adt {
     pub fn new(adt: &RawAdt, info: &AdtInfo, tcx: TyCtxt) -> Adt {
-        let span = adt.def.span();
+        let [span, src] = span_to_src(adt.def.span(), tcx);
         Adt {
             name: adt.def.name(),
             constructors: v_fn_name(&info.constructors),
             access_self: Access::new(&info.this),
             access_field: info.fields.iter().map(Access::new).collect(),
-            span: span.diagnostic(),
-            src: span_to_src(span, tcx),
+            span,
+            src,
         }
     }
 }
@@ -100,9 +100,14 @@ fn v_fn_name(v: &[FnDef]) -> Vec<String> {
     v.iter().map(|c| c.name()).collect()
 }
 
-fn span_to_src(span: Span, tcx: TyCtxt) -> String {
-    tcx.sess
-        .source_map()
-        .span_to_snippet(internal(tcx, span))
-        .unwrap_or_default()
+/// Span to string and source code.
+fn span_to_src(span: Span, tcx: TyCtxt) -> [String; 2] {
+    let span_str = span.diagnostic();
+
+    let span = internal(tcx, span);
+    let src_map = tcx.sess.source_map();
+
+    let src = src_map.span_to_snippet(span).unwrap_or_default();
+
+    [span_str, src]
 }

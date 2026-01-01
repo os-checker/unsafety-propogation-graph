@@ -34,12 +34,8 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
 
     for fn_def in fn_defs {
         if let Some(body) = fn_def.body() {
-            // let name = fn_def.name();
-            // _ = writeln!(stdout, "\n{name}:");
-            // _ = body.dump(stdout, &name);
             let collector = analyze_fn_def::collect(&body);
             let finfo = info_fn::FnInfo::new(collector, &body);
-            // _ = writeln!(stdout, "{:#?}\n{:#?}", finfo.callees, &finfo.adts);
 
             let out_func = output::Function::new(fn_def, &finfo, &body, tcx);
             serde_json::to_writer_pretty(&mut *stdout, &out_func).unwrap();
