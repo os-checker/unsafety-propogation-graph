@@ -1,5 +1,5 @@
+use crate::FxIndexMap;
 use crate::info_fn::{Adt, AdtAccess, FnInfo};
-use rustc_data_structures::fx::FxIndexMap;
 use rustc_public::ty::FnDef;
 
 pub fn adt_info(map_fn: &FxIndexMap<FnDef, FnInfo>) -> FxIndexMap<Adt, AdtInfo> {

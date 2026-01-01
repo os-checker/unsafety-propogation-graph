@@ -1,8 +1,12 @@
 extern crate rustc_public_bridge;
+
 use crate::analyze_fn_def::Collector;
-use rustc_data_structures::fx::{FxIndexMap, FxIndexSet};
+use crate::{FxIndexMap, FxIndexSet};
+use rustc_middle::ty::TyCtxt;
 use rustc_public::{
+    CrateDef,
     mir::{Body, Mutability, ProjectionElem, mono::Instance},
+    rustc_internal::internal,
     ty::{AdtDef, GenericArgs, RigidTy, Ty, TyKind, VariantIdx},
 };
 use rustc_public_bridge::IndexedVal;
@@ -31,7 +35,7 @@ impl FnInfo {
         let mut adts = FxIndexMap::default();
         for place in &collector.v_place {
             if let Some(local_decl) = body.local_decl(place.place.local) {
-                println!("[local {}] {:?}", place.place.local, local_decl.ty);
+                // println!("[local {}] {:?}", place.place.local, local_decl.ty);
                 push_adt(&local_decl.ty, &place.place.projection, &mut adts);
             }
         }
@@ -101,6 +105,14 @@ fn push_adt(ty: &Ty, proj: &[ProjectionElem], adts: &mut FxIndexMap<Adt, FxIndex
 pub struct Adt {
     pub def: AdtDef,
     pub args: GenericArgs,
+}
+
+impl Adt {
+    pub fn to_string(&self, tcx: TyCtxt) -> String {
+        let adt_name = self.def.name();
+        let args = internal(tcx, &self.args);
+        format!("{adt_name}{}", args.print_as_list())
+    }
 }
 
 /// Reference to rederence to the adt or its field.

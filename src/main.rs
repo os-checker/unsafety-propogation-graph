@@ -6,14 +6,16 @@ extern crate rustc_interface;
 extern crate rustc_middle;
 extern crate rustc_public;
 
-use rustc_data_structures::fx::FxIndexMap;
 use rustc_middle::ty::TyCtxt;
-use rustc_public::CrateDef;
 use std::ops::ControlFlow;
 
 mod analyze_fn_def;
 mod info_adt;
 mod info_fn;
+mod output;
+
+mod utils;
+pub use utils::{FxIndexMap, FxIndexSet};
 
 fn main() {
     let rustc_args: Vec<_> = std::env::args().collect();
@@ -31,12 +33,17 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
 
     for fn_def in fn_defs {
         if let Some(body) = fn_def.body() {
-            let name = fn_def.name();
-            _ = writeln!(stdout, "\n{name}:");
-            _ = body.dump(stdout, &name);
+            // let name = fn_def.name();
+            // _ = writeln!(stdout, "\n{name}:");
+            // _ = body.dump(stdout, &name);
             let collector = analyze_fn_def::collect(&body);
             let finfo = info_fn::FnInfo::new(collector, &body);
-            _ = writeln!(stdout, "{:#?}\n{:#?}", finfo.callees, &finfo.adts);
+            // _ = writeln!(stdout, "{:#?}\n{:#?}", finfo.callees, &finfo.adts);
+
+            let out_func = output::OutputFunction::new(fn_def, &finfo, &body, tcx);
+            serde_json::to_writer_pretty(&mut *stdout, &out_func).unwrap();
+            _ = writeln!(stdout);
+
             map_fn.insert(fn_def, finfo);
         }
     }

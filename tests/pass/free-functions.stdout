@@ -1,21 +1,17 @@
-
-a:
-fn a() -> () {
-    let mut _0: ();
-    bb0: {
-        return;
-    }
+{
+  "name": "a",
+  "callees": [],
+  "adts": {},
+  "span": "$DIR/free-functions.rs:3:1: 3:10",
+  "src": "fn a() {}",
+  "mir": "fn a() -> () {/n    let mut _0: ();/n    bb0: {/n        return;/n    }/n}/n"
 }
-{}
-{}
-
-b:
-fn b(_1: usize) -> () {
-    let mut _0: ();
-    bb0: {
-        return;
-    }
+{
+  "name": "b",
+  "callees": [],
+  "adts": {},
+  "span": "$DIR/free-functions.rs:4:1: 4:18",
+  "src": "fn b(_: usize) {}",
+  "mir": "fn b(_1: usize) -> () {/n    let mut _0: ();/n    bb0: {/n        return;/n    }/n}/n"
 }
-{}
-{}
 {}
