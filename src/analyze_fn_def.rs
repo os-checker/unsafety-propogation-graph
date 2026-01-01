@@ -86,6 +86,7 @@ pub struct Place2 {
 }
 
 impl Place2 {
+    #[expect(unused)]
     pub fn ty(&self, body: &Body) -> String {
         let span = self.span;
         if let Ok(ty) = self.place.ty(body.locals()) {

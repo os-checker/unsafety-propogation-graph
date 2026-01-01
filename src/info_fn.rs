@@ -21,6 +21,7 @@ pub struct FnInfo {
     /// a Result above, it's considered to be a constructors for each adt mentioned.
     pub ret_adts: SmallVec<[Adt; 1]>,
     /// All types and places mentioned in the function.
+    #[expect(unused)]
     pub collector: Collector,
     /// Direct callees in the function. The order is decided by MirVisitor,
     /// and called functions is monomorphized.

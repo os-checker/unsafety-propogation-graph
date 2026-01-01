@@ -1,7 +1,15 @@
-use crate::info_fn::FnInfo;
-use crate::utils::FxIndexMap;
+use crate::{
+    info_adt::{Access as RawAccess, AdtInfo},
+    info_fn::{Adt as RawAdt, FnInfo},
+    utils::FxIndexMap,
+};
 use rustc_middle::ty::TyCtxt;
-use rustc_public::{CrateDef, mir::Body, rustc_internal::internal, ty::FnDef};
+use rustc_public::{
+    CrateDef,
+    mir::Body,
+    rustc_internal::internal,
+    ty::{FnDef, Span},
+};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
@@ -17,7 +25,7 @@ pub struct Function {
 impl Function {
     pub fn new(fn_def: FnDef, info: &FnInfo, body: &Body, tcx: TyCtxt) -> Self {
         let name = fn_def.name();
-        let span = &body.span;
+        let span = body.span;
         let mir = {
             let mut buf = Vec::with_capacity(1024);
             _ = body.dump(&mut buf, &name);
@@ -41,11 +49,7 @@ impl Function {
                 })
                 .collect(),
             span: span.diagnostic(),
-            src: tcx
-                .sess
-                .source_map()
-                .span_to_snippet(internal(tcx, span))
-                .unwrap_or_default(),
+            src: span_to_src(span, tcx),
             mir,
         }
     }
@@ -54,6 +58,51 @@ impl Function {
 #[derive(Debug, Serialize)]
 pub struct Adt {
     pub name: String,
+    pub constructors: Vec<String>,
+    pub access_self: Access,
+    pub access_field: Vec<Access>,
     pub span: String,
     pub src: String,
+}
+
+impl Adt {
+    pub fn new(adt: &RawAdt, info: &AdtInfo, tcx: TyCtxt) -> Adt {
+        let span = adt.def.span();
+        Adt {
+            name: adt.def.name(),
+            constructors: v_fn_name(&info.constructors),
+            access_self: Access::new(&info.this),
+            access_field: info.fields.iter().map(Access::new).collect(),
+            span: span.diagnostic(),
+            src: span_to_src(span, tcx),
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct Access {
+    pub read: Vec<String>,
+    pub write: Vec<String>,
+    pub other: Vec<String>,
+}
+
+impl Access {
+    fn new(raw: &RawAccess) -> Access {
+        Access {
+            read: v_fn_name(&raw.read),
+            write: v_fn_name(&raw.write),
+            other: v_fn_name(&raw.other),
+        }
+    }
+}
+
+fn v_fn_name(v: &[FnDef]) -> Vec<String> {
+    v.iter().map(|c| c.name()).collect()
+}
+
+fn span_to_src(span: Span, tcx: TyCtxt) -> String {
+    tcx.sess
+        .source_map()
+        .span_to_snippet(internal(tcx, span))
+        .unwrap_or_default()
 }

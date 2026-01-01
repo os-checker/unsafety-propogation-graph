@@ -76,9 +76,9 @@ impl AdtInfo {
 pub struct Access {
     /// Functions that only read the place via Ref or RefField.
     /// FIXME: Interior mutability is not handled yet.
-    read: ThinVec<FnDef>,
+    pub read: ThinVec<FnDef>,
     /// Functions that can write the place via MutRef, Deref, MutRefField, or DerefVariant.
-    write: ThinVec<FnDef>,
+    pub write: ThinVec<FnDef>,
     /// Functions that in other ways access the place, like Plain or Unknown.
-    other: ThinVec<FnDef>,
+    pub other: ThinVec<FnDef>,
 }

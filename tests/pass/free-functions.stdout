@@ -14,4 +14,4 @@
   "src": "fn b(_: usize) {}",
   "mir": "fn b(_1: usize) -> () {/n    let mut _0: ();/n    bb0: {/n        return;/n    }/n}/n"
 }
-{}
+

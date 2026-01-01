@@ -64,85 +64,51 @@
   "src": "fn write_field(&mut self) {/n        self.s = String::new();/n    }",
   "mir": "fn S::write_field(_1: &mut S) -> () {/n    let mut _0: ();/n    let mut _2: std::string::String;/n    debug self => _1;/n    bb0: {/n        _2 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        drop(((*_1).0: std::string::String)) -> [return: bb2, unwind: bb3];/n    }/n    bb2: {/n        ((*_1).0: std::string::String) = move _2;/n        return;/n    }/n    bb3: {/n        ((*_1).0: std::string::String) = move _2;/n        resume;/n    }/n}/n"
 }
+
 {
-    Adt {
-        def: AdtDef(
-            DefId {
-                id: 5,
-                name: "S",
-            },
-        ),
-        args: GenericArgs(
-            [],
-        ),
-    }: AdtInfo {
-        map: {
-            Ref: [
-                FnDef(
-                    DefId {
-                        id: 0,
-                        name: "S::s_ref",
-                    },
-                ),
-                FnDef(
-                    DefId {
-                        id: 2,
-                        name: "S::field_ref",
-                    },
-                ),
-            ],
-            MutRef: [
-                FnDef(
-                    DefId {
-                        id: 1,
-                        name: "S::s_mut_ref",
-                    },
-                ),
-                FnDef(
-                    DefId {
-                        id: 3,
-                        name: "S::field_mut_ref",
-                    },
-                ),
-                FnDef(
-                    DefId {
-                        id: 4,
-                        name: "S::write_field",
-                    },
-                ),
-            ],
-            DerefVariant(
-                0,
-            ): [
-                FnDef(
-                    DefId {
-                        id: 4,
-                        name: "S::write_field",
-                    },
-                ),
-            ],
-        },
-    },
-    Adt {
-        def: AdtDef(
-            DefId {
-                id: 7,
-                name: "std::string::String",
-            },
-        ),
-        args: GenericArgs(
-            [],
-        ),
-    }: AdtInfo {
-        map: {
-            Plain: [
-                FnDef(
-                    DefId {
-                        id: 4,
-                        name: "S::write_field",
-                    },
-                ),
-            ],
-        },
-    },
+  "name": "S",
+  "constructors": [],
+  "access_self": {
+    "read": [
+      "S::s_ref",
+      "S::field_ref"
+    ],
+    "write": [
+      "S::s_mut_ref",
+      "S::field_mut_ref",
+      "S::write_field"
+    ],
+    "other": []
+  },
+  "access_field": [
+    {
+      "read": [],
+      "write": [
+        "S::write_field"
+      ],
+      "other": []
+    }
+  ],
+  "span": "$DIR/struct_methods.rs:3:1: 3:9",
+  "src": "struct S"
+}
+{
+  "name": "std::string::String",
+  "constructors": [],
+  "access_self": {
+    "read": [],
+    "write": [],
+    "other": [
+      "S::write_field"
+    ]
+  },
+  "access_field": [
+    {
+      "read": [],
+      "write": [],
+      "other": []
+    }
+  ],
+  "span": "/home/gh-zjp-CN/.rustup/toolchains/nightly-2025-12-06-aarch64-unknown-linux-gnu/lib/rustlib/src/rust/library/alloc/src/string.rs:353:1: 353:18",
+  "src": "pub struct String"
 }

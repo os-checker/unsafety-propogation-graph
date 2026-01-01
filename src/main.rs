@@ -49,8 +49,13 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
         }
     }
 
+    _ = writeln!(stdout);
     let map_adt = info_adt::adt_info(&map_fn);
-    _ = writeln!(stdout, "{map_adt:#?}");
+    for (adt, adt_info) in &map_adt {
+        let out_adt = output::Adt::new(adt, adt_info, tcx);
+        serde_json::to_writer_pretty(&mut *stdout, &out_adt).unwrap();
+        _ = writeln!(stdout);
+    }
 
     ControlFlow::Break(())
 }
