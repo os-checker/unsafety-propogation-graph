@@ -1,0 +1,175 @@
+
+S::s_ref:
+fn S::s_ref(_1: &S) -> () {
+    let mut _0: ();
+    debug self => _1;
+    bb0: {
+        return;
+    }
+}
+[local 1] Ty { id: 1, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Not)) }
+{}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 5,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Ref,
+    },
+}
+
+S::s_mut_ref:
+fn S::s_mut_ref(_1: &mut S) -> () {
+    let mut _0: ();
+    debug self => _1;
+    bb0: {
+        return;
+    }
+}
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+{}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 5,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        MutRef,
+    },
+}
+
+S::field_ref:
+fn S::field_ref(_1: &S) -> () {
+    let mut _0: ();
+    debug self => _1;
+    bb0: {
+        return;
+    }
+}
+[local 1] Ty { id: 1, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Not)) }
+{}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 5,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Ref,
+    },
+}
+
+S::field_mut_ref:
+fn S::field_mut_ref(_1: &mut S) -> () {
+    let mut _0: ();
+    debug self => _1;
+    bb0: {
+        return;
+    }
+}
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+{}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 5,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        MutRef,
+    },
+}
+
+S::write_field:
+fn S::write_field(_1: &mut S) -> () {
+    let mut _0: ();
+    let mut _2: std::string::String;
+    debug self => _1;
+    bb0: {
+        _2 = std::string::String::new() -> [return: bb1, unwind continue];
+    }
+    bb1: {
+        drop(((*_1).0: std::string::String)) -> [return: bb2, unwind: bb3];
+    }
+    bb2: {
+        ((*_1).0: std::string::String) = move _2;
+        return;
+    }
+    bb3: {
+        ((*_1).0: std::string::String) = move _2;
+        resume;
+    }
+}
+[local 2] Ty { id: 5, kind: RigidTy(Adt(AdtDef(DefId { id: 7, name: "std::string::String" }), GenericArgs([]))) }
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+[local 2] Ty { id: 5, kind: RigidTy(Adt(AdtDef(DefId { id: 7, name: "std::string::String" }), GenericArgs([]))) }
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+[local 2] Ty { id: 5, kind: RigidTy(Adt(AdtDef(DefId { id: 7, name: "std::string::String" }), GenericArgs([]))) }
+[local 1] Ty { id: 3, kind: RigidTy(Ref(Region { kind: ReErased }, Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 5, name: "S" }), GenericArgs([]))) }, Mut)) }
+{
+    Instance {
+        kind: Item,
+        def: "_RNvMNtCs4Y5nTOLoTTh_5alloc6stringNtB2_6String3newCs12ICNZNz4I2_6simple",
+        args: GenericArgs(
+            [],
+        ),
+    },
+}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 7,
+                name: "std::string::String",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Plain,
+    },
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 5,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        DerefVariant(
+            VariantIdx(
+                0,
+                ThreadLocalIndex,
+            ),
+        ),
+        MutRef,
+    },
+}

@@ -1,14 +1,7 @@
 #![allow(dead_code)]
 
-fn a() {}
-fn b(_: usize) {}
-
 struct S {
     s: String,
-}
-
-fn c() -> S {
-    S { s: String::new() }
 }
 
 impl S {
@@ -28,5 +21,3 @@ impl S {
         self.s = String::new();
     }
 }
-
-fn main() {}

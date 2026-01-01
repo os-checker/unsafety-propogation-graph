@@ -1,4 +1,3 @@
-use rustc_data_structures::fx::FxHashSet;
 use rustc_public::{
     CrateDef,
     mir::{

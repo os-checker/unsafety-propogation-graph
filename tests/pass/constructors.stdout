@@ -1,0 +1,89 @@
+
+a:
+fn a() -> S {
+    let mut _0: S;
+    let mut _1: std::string::String;
+    bb0: {
+        _1 = std::string::String::new() -> [return: bb1, unwind continue];
+    }
+    bb1: {
+        _0 = S(move _1);
+        return;
+    }
+}
+[local 1] Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 4, name: "std::string::String" }), GenericArgs([]))) }
+[local 0] Ty { id: 1, kind: RigidTy(Adt(AdtDef(DefId { id: 2, name: "S" }), GenericArgs([]))) }
+[local 1] Ty { id: 2, kind: RigidTy(Adt(AdtDef(DefId { id: 4, name: "std::string::String" }), GenericArgs([]))) }
+{
+    Instance {
+        kind: Item,
+        def: "_RNvMNtCs4Y5nTOLoTTh_5alloc6stringNtB2_6String3newCsbYoa5N7vqFh_12constructors",
+        args: GenericArgs(
+            [],
+        ),
+    },
+}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 4,
+                name: "std::string::String",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Plain,
+    },
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 2,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Plain,
+    },
+}
+
+S::new:
+fn S::new() -> S {
+    let mut _0: S;
+    bb0: {
+        _0 = a() -> [return: bb1, unwind continue];
+    }
+    bb1: {
+        return;
+    }
+}
+[local 0] Ty { id: 1, kind: RigidTy(Adt(AdtDef(DefId { id: 2, name: "S" }), GenericArgs([]))) }
+{
+    Instance {
+        kind: Item,
+        def: "_RNvCsbYoa5N7vqFh_12constructors1a",
+        args: GenericArgs(
+            [],
+        ),
+    },
+}
+{
+    Adt {
+        def: AdtDef(
+            DefId {
+                id: 2,
+                name: "S",
+            },
+        ),
+        args: GenericArgs(
+            [],
+        ),
+    }: {
+        Plain,
+    },
+}

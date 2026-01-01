@@ -1,0 +1,20 @@
+
+a:
+fn a() -> () {
+    let mut _0: ();
+    bb0: {
+        return;
+    }
+}
+{}
+{}
+
+b:
+fn b(_1: usize) -> () {
+    let mut _0: ();
+    bb0: {
+        return;
+    }
+}
+{}
+{}
