@@ -10,6 +10,7 @@ use rustc_public::{
     ty::{AdtDef, GenericArgs, RigidTy, Ty, TyKind, VariantIdx},
 };
 use rustc_public_bridge::IndexedVal;
+use std::fmt;
 
 pub struct FnInfo {
     /// All types and places mentioned in the function.
@@ -111,12 +112,17 @@ impl Adt {
     pub fn to_string(&self, tcx: TyCtxt) -> String {
         let adt_name = self.def.name();
         let args = internal(tcx, &self.args);
-        format!("{adt_name}{}", args.print_as_list())
+        let args = if args.is_empty() {
+            ""
+        } else {
+            &args.print_as_list()
+        };
+        format!("{adt_name}{args}")
     }
 }
 
 /// Reference to rederence to the adt or its field.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 pub enum AdtAccess {
     Ref,
     MutRef,
@@ -127,4 +133,32 @@ pub enum AdtAccess {
     DerefVariant(VariantIdx),
     PlainVariant(VariantIdx),
     Unknown(Box<[ProjectionElem]>),
+}
+
+impl fmt::Debug for AdtAccess {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Ref => write!(f, "Ref"),
+            Self::MutRef => write!(f, "MutRef"),
+            Self::Deref => write!(f, "Deref"),
+            Self::Plain => write!(f, "Plain"),
+            Self::RefField(arg0) => f.debug_tuple("RefField").field(&arg0.to_index()).finish(),
+            Self::MutRefField(arg0) => f
+                .debug_tuple("MutRefField")
+                .field(&arg0.to_index())
+                .finish(),
+            Self::DerefVariant(arg0) => f
+                .debug_tuple("DerefVariant")
+                .field(&arg0.to_index())
+                .finish(),
+            Self::PlainVariant(arg0) => f
+                .debug_tuple("PlainVariant")
+                .field(&arg0.to_index())
+                .finish(),
+            Self::Unknown(arg0) => f
+                .debug_tuple("Unknown")
+                .field(&format_args!("{arg0:?}"))
+                .finish(),
+        }
+    }
 }

@@ -2,7 +2,7 @@
   "name": "S::s_ref",
   "callees": [],
   "adts": {
-    "S[]": [
+    "S": [
       "Ref"
     ]
   },
@@ -14,7 +14,7 @@
   "name": "S::s_mut_ref",
   "callees": [],
   "adts": {
-    "S[]": [
+    "S": [
       "MutRef"
     ]
   },
@@ -26,7 +26,7 @@
   "name": "S::field_ref",
   "callees": [],
   "adts": {
-    "S[]": [
+    "S": [
       "Ref"
     ]
   },
@@ -38,7 +38,7 @@
   "name": "S::field_mut_ref",
   "callees": [],
   "adts": {
-    "S[]": [
+    "S": [
       "MutRef"
     ]
   },
@@ -52,11 +52,11 @@
     "std::string::String::new"
   ],
   "adts": {
-    "std::string::String[]": [
+    "std::string::String": [
       "Plain"
     ],
-    "S[]": [
-      "DerefVariant(VariantIdx(0, ThreadLocalIndex))",
+    "S": [
+      "DerefVariant(0)",
       "MutRef"
     ]
   },
@@ -112,10 +112,7 @@
                 ),
             ],
             DerefVariant(
-                VariantIdx(
-                    0,
-                    ThreadLocalIndex,
-                ),
+                0,
             ): [
                 FnDef(
                     DefId {

@@ -4,10 +4,10 @@
     "std::string::String::new"
   ],
   "adts": {
-    "std::string::String[]": [
+    "std::string::String": [
       "Plain"
     ],
-    "S[]": [
+    "S": [
       "Plain"
     ]
   },
@@ -21,7 +21,7 @@
     "a"
   ],
   "adts": {
-    "S[]": [
+    "S": [
       "Plain"
     ]
   },
