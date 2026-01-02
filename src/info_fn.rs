@@ -199,6 +199,13 @@ impl LocalsAccess {
         self.locals.dedup();
         self.locals.shrink_to_fit();
     }
+
+    /// Returns true if the local index refers to any argument.
+    pub fn is_argument(&self, arg_count: usize) -> bool {
+        self.locals
+            .iter()
+            .any(|&idx| idx < arg_count + 1 && idx != 0)
+    }
 }
 
 /// Reference to rederence to the adt or its field.

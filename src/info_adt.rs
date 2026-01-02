@@ -14,7 +14,10 @@ pub fn adt_info(map_fn: &FxIndexMap<FnDef, FnInfo>) -> FxIndexMap<Adt, AdtInfo> 
 
             for access in &locals.access {
                 let v = adt_info.map.entry(access.clone()).or_default();
-                v.push(fn_def);
+                v.push(FnDefAdt {
+                    fn_def,
+                    as_argument: locals.is_argument(fn_info.arg_count),
+                });
             }
         }
 
@@ -36,11 +39,14 @@ pub fn adt_info(map_fn: &FxIndexMap<FnDef, FnInfo>) -> FxIndexMap<Adt, AdtInfo> 
 #[derive(Debug, Default)]
 pub struct AdtInfo {
     /// The variant access appear in user functions.
-    pub map: FxIndexMap<AdtAccess, ThinVec<FnDef>>,
+    pub map: FxIndexMap<AdtAccess, ThinVec<FnDefAdt>>,
     /// Functions in the form of `fn(...) -> Self`.
     pub constructors: ThinVec<FnDef>,
-    /// Functions that access the whole adt.
-    pub this: Access,
+    /// Functions that access the whole adt appearing as arguments.
+    /// Like `fn(&self)`, `fn(Self)`, ....
+    pub as_argument: Access,
+    /// Functions that access the whole adt otherwise (probably as plain locals).
+    pub otherwise: Access,
     /// Functions that access the fields. The slice index corresponds to the field index.
     /// If the adt is not a struct, or unit struct (struct without field), the slices is empty.
     pub fields: Box<[Access]>,
@@ -54,21 +60,42 @@ impl AdtInfo {
 
         // Backfill access to adt and fields.
         for (access, v_fn) in &self.map {
+            let push = |as_arg: &mut ThinVec<FnDef>, other: &mut ThinVec<FnDef>| {
+                for f in v_fn {
+                    if f.as_argument {
+                        as_arg.push(f.fn_def);
+                    } else {
+                        other.push(f.fn_def);
+                    }
+                }
+            };
             match access {
-                AdtAccess::Ref => self.this.read = v_fn.as_slice().into(),
-                AdtAccess::MutRef | AdtAccess::Deref => self.this.write.extend_from_slice(v_fn),
-                AdtAccess::Plain | AdtAccess::Unknown(_) => self.this.other.extend_from_slice(v_fn),
+                AdtAccess::Ref => push(&mut self.as_argument.read, &mut self.otherwise.read),
+                AdtAccess::MutRef | AdtAccess::Deref => {
+                    push(&mut self.as_argument.write, &mut self.otherwise.write)
+                }
+                AdtAccess::Plain | AdtAccess::Unknown(_) => {
+                    push(&mut self.as_argument.other, &mut self.otherwise.other)
+                }
                 AdtAccess::RefVariant(idx) => {
-                    self.fields[idx.to_index()].read = v_fn.as_slice().into()
+                    self.fields[idx.to_index()].read = v_fn.iter().map(|f| f.fn_def).collect();
                 }
                 AdtAccess::MutRefVariant(idx) | AdtAccess::DerefVariant(idx) => {
-                    self.fields[idx.to_index()].write.extend_from_slice(v_fn);
+                    self.fields[idx.to_index()]
+                        .write
+                        .extend(v_fn.iter().map(|f| f.fn_def));
                 }
             }
         }
 
         // Extract adts from type parameter.
     }
+}
+
+#[derive(Debug)]
+pub struct FnDefAdt {
+    pub fn_def: FnDef,
+    pub as_argument: bool,
 }
 
 /// Access a place w.r.t the adt or field.

@@ -68,7 +68,7 @@
 {
   "name": "S",
   "constructors": [],
-  "access_self": {
+  "access_self_as_arg": {
     "read": [
       "S::s_ref",
       "S::field_ref"
@@ -78,6 +78,11 @@
       "S::field_mut_ref",
       "S::write_field"
     ],
+    "other": []
+  },
+  "access_self_as_locals": {
+    "read": [],
+    "write": [],
     "other": []
   },
   "access_field": [
@@ -95,7 +100,12 @@
 {
   "name": "std::string::String",
   "constructors": [],
-  "access_self": {
+  "access_self_as_arg": {
+    "read": [],
+    "write": [],
+    "other": []
+  },
+  "access_self_as_locals": {
     "read": [],
     "write": [],
     "other": [

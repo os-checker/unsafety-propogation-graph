@@ -59,7 +59,8 @@ impl Function {
 pub struct Adt {
     pub name: String,
     pub constructors: Vec<String>,
-    pub access_self: Access,
+    pub access_self_as_arg: Access,
+    pub access_self_as_locals: Access,
     pub access_field: Vec<Access>,
     pub span: String,
     pub src: String,
@@ -71,7 +72,8 @@ impl Adt {
         Adt {
             name: adt.def.name(),
             constructors: v_fn_name(&info.constructors),
-            access_self: Access::new(&info.this),
+            access_self_as_arg: Access::new(&info.as_argument),
+            access_self_as_locals: Access::new(&info.otherwise),
             access_field: info.fields.iter().map(Access::new).collect(),
             span,
             src,
