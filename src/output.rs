@@ -1,5 +1,3 @@
-use std::{fs, path::PathBuf};
-
 use crate::{
     info_adt::{Access as RawAccess, AdtInfo},
     info_fn::{Adt as RawAdt, FnInfo},
@@ -13,6 +11,7 @@ use rustc_public::{
     ty::{FnDef, Span},
 };
 use serde::Serialize;
+use std::{fs, io, path::PathBuf};
 
 #[derive(Debug, Serialize)]
 pub struct Function {
@@ -57,7 +56,7 @@ impl Function {
     }
 
     pub fn dump(&self, writer: &Writer) {
-        writer.dump_json(&self.name, self);
+        writer.dump_json("function", &self.name, self);
     }
 }
 
@@ -87,7 +86,7 @@ impl Adt {
     }
 
     pub fn dump(&self, writer: &Writer) {
-        writer.dump_json(&self.name, self);
+        writer.dump_json("adt", &self.name, self);
     }
 }
 
@@ -133,24 +132,36 @@ impl Writer {
     pub fn new(crate_name: &str) -> Self {
         match base_dir(crate_name) {
             Some(dir) => {
-                fs::create_dir_all(&dir).unwrap();
+                match fs::create_dir_all(&dir) {
+                    Ok(()) => (),
+                    Err(err) if err.kind() == io::ErrorKind::AlreadyExists => (),
+                    Err(err) => panic!("The directory {dir:?} is not created: {err}"),
+                }
                 Writer::BaseDir(dir)
             }
             None => Writer::Stdout,
         }
     }
 
-    fn dump_json(&self, fname_stem: &str, data: &impl Serialize) {
+    fn dump_json(&self, parent: &str, fname_stem: &str, data: &impl Serialize) {
         match self {
             Writer::BaseDir(dir) => {
-                let mut file_path = dir.join(fname_stem);
+                let parent = dir.join(parent);
+                match fs::create_dir(&parent) {
+                    Ok(()) => (),
+                    Err(err) if err.kind() == io::ErrorKind::AlreadyExists => (),
+                    Err(err) => panic!("The directory {dir:?} is not created: {err}"),
+                }
+
+                let mut file_path = parent.join(fname_stem);
                 file_path.set_extension("json");
+
                 let file = fs::File::create(&file_path).unwrap();
                 serde_json::to_writer_pretty(file, data).unwrap();
             }
             Writer::Stdout => {
-                use std::io::Write;
-                let stdout = &mut std::io::stdout();
+                use io::Write;
+                let stdout = &mut io::stdout();
                 _ = writeln!(stdout);
                 serde_json::to_writer_pretty(&mut *stdout, data).unwrap();
                 _ = writeln!(stdout);
