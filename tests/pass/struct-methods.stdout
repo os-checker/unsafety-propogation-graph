@@ -1,6 +1,7 @@
 
 {
   "name": "S::new",
+  "safe": true,
   "callees": [],
   "adts": {
     "S": [
@@ -17,6 +18,7 @@
 
 {
   "name": "S::s_ref",
+  "safe": true,
   "callees": [],
   "adts": {
     "S": [
@@ -30,6 +32,7 @@
 
 {
   "name": "S::s_mut_ref",
+  "safe": true,
   "callees": [],
   "adts": {
     "S": [
@@ -43,6 +46,7 @@
 
 {
   "name": "S::field_ref",
+  "safe": true,
   "callees": [],
   "adts": {
     "S": [
@@ -56,6 +60,7 @@
 
 {
   "name": "S::field_mut_ref",
+  "safe": true,
   "callees": [],
   "adts": {
     "S": [
@@ -69,6 +74,7 @@
 
 {
   "name": "S::write_field",
+  "safe": true,
   "callees": [
     "std::string::String::new"
   ],

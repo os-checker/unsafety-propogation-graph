@@ -6,7 +6,7 @@ use crate::{
 use rustc_middle::ty::TyCtxt;
 use rustc_public::{
     CrateDef,
-    mir::Body,
+    mir::{Body, Safety},
     rustc_internal::internal,
     ty::{FnDef, Span},
 };
@@ -16,6 +16,7 @@ use std::{fs, io, path::PathBuf};
 #[derive(Debug, Serialize)]
 pub struct Function {
     pub name: String,
+    pub safe: bool,
     pub callees: Vec<String>,
     pub adts: FxIndexMap<String, Vec<String>>,
     pub span: String,
@@ -34,6 +35,7 @@ impl Function {
         };
         Function {
             name,
+            safe: matches!(fn_def.fn_sig().value.safety, Safety::Safe),
             callees: info
                 .callees
                 .iter()
@@ -75,7 +77,7 @@ impl Adt {
     pub fn new(adt: &RawAdt, info: &AdtInfo, tcx: TyCtxt) -> Adt {
         let [span, src] = span_to_src(adt.def.span(), tcx);
         Adt {
-            name: adt.def.name(),
+            name: adt.to_string(tcx),
             constructors: v_fn_name(&info.constructors),
             access_self_as_arg: Access::new(&info.as_argument),
             access_self_as_locals: Access::new(&info.otherwise),

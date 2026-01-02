@@ -1,6 +1,7 @@
 
 {
   "name": "a",
+  "safe": true,
   "callees": [
     "std::string::String::new"
   ],
@@ -19,6 +20,7 @@
 
 {
   "name": "S::new",
+  "safe": true,
   "callees": [
     "a"
   ],
