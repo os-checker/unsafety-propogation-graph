@@ -1,3 +1,5 @@
+use std::{fs, path::PathBuf};
+
 use crate::{
     info_adt::{Access as RawAccess, AdtInfo},
     info_fn::{Adt as RawAdt, FnInfo},
@@ -53,6 +55,10 @@ impl Function {
             mir,
         }
     }
+
+    pub fn dump(&self, writer: &Writer) {
+        writer.dump_json(&self.name, self);
+    }
 }
 
 #[derive(Debug, Serialize)]
@@ -78,6 +84,10 @@ impl Adt {
             span,
             src,
         }
+    }
+
+    pub fn dump(&self, writer: &Writer) {
+        writer.dump_json(&self.name, self);
     }
 }
 
@@ -112,4 +122,47 @@ fn span_to_src(span: Span, tcx: TyCtxt) -> [String; 2] {
     let src = src_map.span_to_snippet(span).unwrap_or_default();
 
     [span_str, src]
+}
+
+pub enum Writer {
+    BaseDir(PathBuf),
+    Stdout,
+}
+
+impl Writer {
+    pub fn new(crate_name: &str) -> Self {
+        match base_dir(crate_name) {
+            Some(dir) => {
+                fs::create_dir_all(&dir).unwrap();
+                Writer::BaseDir(dir)
+            }
+            None => Writer::Stdout,
+        }
+    }
+
+    fn dump_json(&self, fname_stem: &str, data: &impl Serialize) {
+        match self {
+            Writer::BaseDir(dir) => {
+                let mut file_path = dir.join(fname_stem);
+                file_path.set_extension("json");
+                let file = fs::File::create(&file_path).unwrap();
+                serde_json::to_writer_pretty(file, data).unwrap();
+            }
+            Writer::Stdout => {
+                use std::io::Write;
+                let stdout = &mut std::io::stdout();
+                _ = writeln!(stdout);
+                serde_json::to_writer_pretty(&mut *stdout, data).unwrap();
+                _ = writeln!(stdout);
+            }
+        }
+    }
+}
+
+/// The base directory `$UPG_DIR/crate_name` to store JSONs data.
+/// If the environment variable `UPG_DIR` is not set, data will be printed to stdout.
+pub fn base_dir(crate_name: &str) -> Option<PathBuf> {
+    std::env::var("UPG_DIR")
+        .ok()
+        .map(|dir| PathBuf::from(dir).join(crate_name))
 }

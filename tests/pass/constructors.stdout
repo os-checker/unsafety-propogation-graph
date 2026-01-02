@@ -1,3 +1,4 @@
+
 {
   "name": "a",
   "callees": [
@@ -15,6 +16,7 @@
   "src": "fn a() -> S {/n    S { s: String::new() }/n}",
   "mir": "fn a() -> S {/n    let mut _0: S;/n    let mut _1: std::string::String;/n    bb0: {/n        _1 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        _0 = S(move _1);/n        return;/n    }/n}/n"
 }
+
 {
   "name": "S::new",
   "callees": [
@@ -55,6 +57,7 @@
   "span": "$SYSROOT/alloc/src/string.rs:353:1: 353:18",
   "src": "pub struct String"
 }
+
 {
   "name": "S",
   "constructors": [

@@ -24,12 +24,10 @@ fn main() {
 }
 
 fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
-    use std::io::Write;
-    let stdout = &mut std::io::stdout();
-
     let local_crate = rustc_public::local_crate();
     let fn_defs = local_crate.fn_defs();
 
+    let writer = output::Writer::new(&local_crate.name);
     let mut map_fn = FxIndexMap::with_capacity_and_hasher(fn_defs.len(), Default::default());
 
     for fn_def in fn_defs {
@@ -38,19 +36,16 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
             let finfo = info_fn::FnInfo::new(collector, &body);
 
             let out_func = output::Function::new(fn_def, &finfo, &body, tcx);
-            serde_json::to_writer_pretty(&mut *stdout, &out_func).unwrap();
-            _ = writeln!(stdout);
+            out_func.dump(&writer);
 
             map_fn.insert(fn_def, finfo);
         }
     }
 
-    _ = writeln!(stdout);
     let map_adt = info_adt::adt_info(&map_fn);
     for (adt, adt_info) in &map_adt {
         let out_adt = output::Adt::new(adt, adt_info, tcx);
-        serde_json::to_writer_pretty(&mut *stdout, &out_adt).unwrap();
-        _ = writeln!(stdout);
+        out_adt.dump(&writer);
     }
 
     ControlFlow::Break(())
