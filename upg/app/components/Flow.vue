@@ -5,36 +5,19 @@
 <script setup lang="ts">
 import type { Node, Edge } from '@vue-flow/core'
 import { VueFlow, useVueFlow } from '@vue-flow/core'
+import type { Function } from "~/lib/output"
+
+const props = defineProps<{ raw: Function }>();
 
 const { fitView } = useVueFlow();
 const { layout } = useLayout();
-const url = "https://raw.githubusercontent.com/os-checker/unsafety-propogation-graph-data/refs/heads/main/test/demo/function/S%3A%3Awrite_field.json"
-
-type Function = {
-  name: string,
-  safe: boolean,
-  callees: string[],
-  adts: { [key: string]: string[] },
-  span: string,
-  src: string,
-  mir: string
-}
-
-const EMPTY: Function = {
-  name: "", safe: true, callees: [], adts: {}, span: "", src: "", mir: ""
-};
-
-const raw = ref(EMPTY);
-$fetch(url)
-  .then(text => raw.value = JSON.parse(text as string))
-  .catch(err => console.log(err));
 
 type Data = { nodes: Node[], edges: Edge[] };
 const EMPTY_DATA = { nodes: [], edges: [] };
 
 const data = ref<Data>(EMPTY_DATA);
 
-watch(raw, val => {
+watch(() => props.raw, val => {
   if (!val.name) return;
 
   // Placeholder for initial position. The layout will be recomputed later.
