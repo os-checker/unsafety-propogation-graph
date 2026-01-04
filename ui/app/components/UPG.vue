@@ -32,7 +32,7 @@ const codeStyle = computed(() => ({
   gridTemplateColumns: "1fr 1fr",
 }));
 
-const url = "https://raw.githubusercontent.com/os-checker/unsafety-propogation-graph-data/refs/heads/main/test/demo/function/S%3A%3Awrite_field.json"
+const url = "https://raw.githubusercontent.com/os-checker/unsafety-propagation-graph-data/refs/heads/main/test/demo/function/S%3A%3Awrite_field.json"
 
 const raw = ref<Function>(EMPTY_FUNCTION);
 $fetch(url)

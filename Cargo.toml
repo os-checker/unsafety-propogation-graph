@@ -1,5 +1,5 @@
 [package]
-name = "unsafety-propogation-graph"
+name = "unsafety-propagation-graph"
 version = "0.1.0"
 edition = "2024"
 

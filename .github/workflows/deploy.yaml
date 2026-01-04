@@ -12,7 +12,7 @@ jobs:
 
       - name: Generate
         working-directory: ui
-        run: npm i && NUXT_APP_BASE_URL=/unsafety-propogation-graph/ npm run generate
+        run: npm i && NUXT_APP_BASE_URL=/unsafety-propagation-graph/ npm run generate
 
       - name: Upload static files as artifact
         uses: actions/upload-pages-artifact@v3
