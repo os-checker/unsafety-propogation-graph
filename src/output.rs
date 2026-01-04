@@ -75,29 +75,48 @@ pub struct Adt {
     pub access_field: Vec<Access>,
     pub span: String,
     pub src: String,
-    /// The index 0 refers to the adt doc.
-    /// The rest refers to the variant docs.
-    pub docs: Vec<String>,
+    pub kind: String,
+    pub doc_adt: String,
+    pub variant_fields: FxIndexMap<String, VariantField>,
 }
 
 impl Adt {
     pub fn new(adt: &RawAdt, info: &AdtInfo, tcx: TyCtxt) -> Adt {
         let [span, src] = span_to_src(adt.def.span(), tcx);
 
-        let mut docs = Vec::with_capacity(adt.def.num_variants() + 1);
-        docs.push(doc_string(adt.def.def_id(), tcx));
-        for variant in adt.def.variants_iter() {
-            let variant = internal(tcx, variant);
+        let kind = format!("{:?}", adt.def.kind());
+        let doc_adt = doc_string(adt.def.def_id(), tcx);
 
-            // Enum or unit variant constructor.
-            if let Some((_, did)) = &variant.ctor {
-                docs.push(doc_string_internel_did(*did, tcx));
-            }
-
-            // Fields. FIXME: we have to handle struct fields and enum variant fields.
-            for field in &variant.fields {
-                docs.push(doc_string_internel_did(field.did, tcx));
-            }
+        let mut variant_fields =
+            FxIndexMap::with_capacity_and_hasher(adt.variant_fields.len(), Default::default());
+        let adt_def = internal(tcx, adt.def);
+        for vf in &*adt.variant_fields {
+            let idx = format!("{:?}", vf.idx);
+            let name = vf.name.to_string();
+            let old = match (vf.idx.field, vf.idx.variant) {
+                // unit struct: no fields
+                (None, None) => break,
+                // enum variant probably without fields
+                (None, Some(variant_idx)) => {
+                    let did = adt_def.variant(variant_idx.into()).def_id;
+                    let doc = doc_string_internel_did(did, tcx);
+                    variant_fields.insert(idx, VariantField { name, doc })
+                }
+                (Some(field_idx), None) => {
+                    let variant = adt_def.variant(0u32.into());
+                    let field = variant
+                        .fields
+                        .get(rustc_abi::FieldIdx::from_u32(field_idx))
+                        .unwrap();
+                    let doc = doc_string_internel_did(field.did, tcx);
+                    variant_fields.insert(idx, VariantField { name, doc })
+                }
+                (Some(_), Some(_)) => {
+                    let doc = String::new();
+                    variant_fields.insert(idx, VariantField { name, doc })
+                }
+            };
+            assert!(old.is_none(), "{adt_def:?}: {vf:?} has been inserted")
         }
 
         Adt {
@@ -108,7 +127,9 @@ impl Adt {
             access_field: info.fields.iter().map(Access::new).collect(),
             span,
             src,
-            docs,
+            kind,
+            doc_adt,
+            variant_fields,
         }
     }
 
@@ -132,6 +153,12 @@ impl Access {
             other: v_fn_name(&raw.other),
         }
     }
+}
+
+#[derive(Debug, Serialize)]
+pub struct VariantField {
+    pub name: String,
+    pub doc: String,
 }
 
 fn v_fn_name(v: &[FnDef]) -> Vec<String> {
@@ -163,7 +190,7 @@ fn doc_string_internel_did(did: IDefId, tcx: TyCtxt) -> String {
     let mut buf = String::new();
     for attr in tcx.get_all_attrs(did) {
         if let Attribute::Parsed(AttributeKind::DocComment { comment, .. }) = attr {
-            _ = write!(&mut buf, "{comment}");
+            _ = writeln!(&mut buf, "{comment}");
         }
     }
     buf

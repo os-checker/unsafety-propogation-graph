@@ -31,12 +31,18 @@ impl E {
     }
 }
 
+/// Struct S doc.
 struct S {
+    /// Field a doc.
     a: String,
+    /// Field b doc.
     b: String,
 }
 
+/// Enum doc.
 enum E {
+    /// Varaint A doc.
     A(String),
+    /// Varaint B doc.
     B(String),
 }
