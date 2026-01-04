@@ -1,7 +1,9 @@
-use crate::info_fn::{Adt, AdtAccess, FnInfo};
-use crate::utils::{FxIndexMap, ThinVec};
+use crate::{
+    adt::{Adt, AdtAccess},
+    info_fn::FnInfo,
+    utils::{FxIndexMap, ThinVec},
+};
 use rustc_public::ty::FnDef;
-use rustc_public_bridge::IndexedVal;
 
 pub fn adt_info(map_fn: &FxIndexMap<FnDef, FnInfo>) -> FxIndexMap<Adt, AdtInfo> {
     let mut map_adt =
@@ -56,7 +58,10 @@ impl AdtInfo {
     /// The function initializes the rest fields when `map` is ready.
     fn init(&mut self, adt: &Adt) {
         // Initialize field access.
-        self.fields = vec![Access::default(); adt.def.num_variants()].into();
+        self.fields = adt
+            .num_fields()
+            .map(|len| vec![Access::default(); len].into())
+            .unwrap_or_default();
 
         // Backfill access to adt and fields.
         for (access, v_fn) in &self.map {
@@ -77,13 +82,15 @@ impl AdtInfo {
                 AdtAccess::Plain | AdtAccess::Unknown(_) => {
                     push(&mut self.as_argument.other, &mut self.otherwise.other)
                 }
-                AdtAccess::RefVariant(idx) => {
-                    self.fields[idx.to_index()].read = v_fn.iter().map(|f| f.fn_def).collect();
+                AdtAccess::RefVariantField(idx) => {
+                    if let Some(idx) = idx.field_idx() {
+                        self.fields[idx].read = v_fn.iter().map(|f| f.fn_def).collect();
+                    }
                 }
-                AdtAccess::MutRefVariant(idx) | AdtAccess::DerefVariant(idx) => {
-                    self.fields[idx.to_index()]
-                        .write
-                        .extend(v_fn.iter().map(|f| f.fn_def));
+                AdtAccess::MutRefVariantField(idx) | AdtAccess::DerefVariantField(idx) => {
+                    if let Some(idx) = idx.field_idx() {
+                        self.fields[idx].write.extend(v_fn.iter().map(|f| f.fn_def));
+                    }
                 }
             }
         }

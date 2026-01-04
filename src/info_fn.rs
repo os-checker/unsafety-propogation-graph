@@ -1,15 +1,10 @@
+use crate::adt::{Adt, AdtAccess, CacheAdt, LocalsAccess, VaraintFieldIdx, new_adt};
 use crate::analyze_fn_def::Collector;
-use crate::utils::{FxIndexMap, FxIndexSet, SmallVec, ThinVec};
-use rustc_middle::ty::TyCtxt;
-use rustc_public::ty::GenericArgKind;
+use crate::utils::{FxIndexMap, FxIndexSet, SmallVec};
 use rustc_public::{
-    CrateDef,
     mir::{Body, Mutability, ProjectionElem, mono::Instance},
-    rustc_internal::internal,
-    ty::{AdtDef, GenericArgs, RigidTy, Ty, TyKind, VariantIdx},
+    ty::{GenericArgKind, RigidTy, Ty, TyKind},
 };
-use rustc_public_bridge::IndexedVal;
-use std::fmt;
 
 pub struct FnInfo {
     /// The owned return type.
@@ -33,7 +28,7 @@ pub struct FnInfo {
 }
 
 impl FnInfo {
-    pub fn new(collector: Collector, body: &Body) -> FnInfo {
+    pub fn new(collector: Collector, body: &Body, cache: &mut CacheAdt) -> FnInfo {
         let mut callees = FxIndexSet::default();
         for ty in &collector.v_ty {
             if let RigidTy::FnDef(fn_def, args) = &ty.ty
@@ -52,6 +47,7 @@ impl FnInfo {
                     &local_decl.ty,
                     &place.place.projection,
                     &mut adts,
+                    cache,
                 );
             }
         }
@@ -59,7 +55,7 @@ impl FnInfo {
         adts.values_mut().for_each(|l| l.deduplicate_indices());
 
         let mut ret_adts = Default::default();
-        flatten_adts(&body.ret_local().ty, &mut ret_adts);
+        flatten_adts(&body.ret_local().ty, &mut ret_adts, cache);
 
         FnInfo {
             ret_adts,
@@ -77,6 +73,7 @@ fn push_adt(
     ty: &Ty,
     proj: &[ProjectionElem],
     adts: &mut FxIndexMap<Adt, LocalsAccess>,
+    cache: &mut CacheAdt,
 ) {
     let TyKind::RigidTy(ty) = ty.kind() else {
         return;
@@ -84,13 +81,15 @@ fn push_adt(
 
     match ty {
         RigidTy::Adt(def, args) => {
-            let adt = Adt { def, args };
+            let adt = new_adt(def, args, cache);
             let local = adts.entry(adt).or_default();
             local.locals.push(idx);
+            // FIXME: ProjectionElem::Downcast(VariantIdx) should also be handled.
             match proj {
-                [ProjectionElem::Deref, ProjectionElem::Field(idx, _), ..] => local
-                    .access
-                    .insert(AdtAccess::DerefVariant(VariantIdx::to_val(*idx))),
+                [ProjectionElem::Deref, ProjectionElem::Field(idx, _), ..] => {
+                    let value = AdtAccess::DerefVariantField(VaraintFieldIdx::new_field(*idx));
+                    local.access.insert(value)
+                }
                 [ProjectionElem::Deref] => local.access.insert(AdtAccess::Deref),
                 [] => local.access.insert(AdtAccess::Plain),
                 _ => local.access.insert(AdtAccess::Unknown(proj.into())),
@@ -100,16 +99,16 @@ fn push_adt(
             let TyKind::RigidTy(RigidTy::Adt(def, args)) = ref_ty.kind() else {
                 return;
             };
-            let adt = Adt { def, args };
+            let adt = new_adt(def, args, cache);
             let local = adts.entry(adt).or_default();
             local.locals.push(idx);
             match proj {
                 [ProjectionElem::Field(idx, _), ..] => {
-                    let var_idx = VariantIdx::to_val(*idx);
+                    let field_idx = VaraintFieldIdx::new_field(*idx);
                     let acc = if matches!(mutability, Mutability::Mut) {
-                        AdtAccess::MutRefVariant(var_idx)
+                        AdtAccess::MutRefVariantField(field_idx)
                     } else {
-                        AdtAccess::RefVariant(var_idx)
+                        AdtAccess::RefVariantField(field_idx)
                     };
                     local.access.insert(acc);
                 }
@@ -121,11 +120,11 @@ fn push_adt(
                     };
                     local.access.insert(acc);
                 }
-                _ => push_adt(idx, &ref_ty, proj, adts),
+                _ => push_adt(idx, &ref_ty, proj, adts, cache),
             }
         }
-        RigidTy::Tuple(v) => v.iter().for_each(|ty| push_adt(idx, ty, proj, adts)),
-        RigidTy::Slice(ty) => push_adt(idx, &ty, proj, adts),
+        RigidTy::Tuple(v) => v.iter().for_each(|ty| push_adt(idx, ty, proj, adts, cache)),
+        RigidTy::Slice(ty) => push_adt(idx, &ty, proj, adts, cache),
         _ => (),
     }
 }
@@ -135,112 +134,22 @@ fn push_adt(
 /// stops at an explicit reference or raw pointer. That means something like
 /// `struct A<'a, T>(&'a T)` will be incorrectly treated as owned `A` and `T`
 /// when `A` and `T` are concrete/rigid types.
-fn flatten_adts(ty: &Ty, v: &mut SmallVec<[Adt; 1]>) {
+fn flatten_adts(ty: &Ty, v: &mut SmallVec<[Adt; 1]>, cache: &mut CacheAdt) {
     let TyKind::RigidTy(ty) = ty.kind() else {
         return;
     };
 
     match ty {
         RigidTy::Adt(def, args) => {
-            v.push(Adt {
-                def,
-                args: args.clone(),
-            });
+            v.push(new_adt(def, args.clone(), cache));
             for arg in &args.0 {
                 if let GenericArgKind::Type(ty) = arg {
-                    flatten_adts(ty, v)
+                    flatten_adts(ty, v, cache)
                 }
             }
         }
-        RigidTy::Array(ty, _) => flatten_adts(&ty, v),
-        RigidTy::Tuple(v_ty) => v_ty.iter().for_each(|ty| flatten_adts(ty, v)),
+        RigidTy::Array(ty, _) => flatten_adts(&ty, v, cache),
+        RigidTy::Tuple(v_ty) => v_ty.iter().for_each(|ty| flatten_adts(ty, v, cache)),
         _ => (),
-    }
-}
-
-/// Monomorphized adt.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct Adt {
-    pub def: AdtDef,
-    pub args: GenericArgs,
-}
-
-impl Adt {
-    pub fn to_string(&self, tcx: TyCtxt) -> String {
-        let adt_name = self.def.name();
-        let args = internal(tcx, &self.args);
-        let args = if args.is_empty() {
-            ""
-        } else {
-            &args.print_as_list()
-        };
-        format!("{adt_name}{args}")
-    }
-}
-
-/// Access to locals including retern place, argument places,
-/// and inner function places.
-#[derive(Debug, Default)]
-pub struct LocalsAccess {
-    /// Local indices. See [`Body::locals`].
-    ///
-    /// 0 means retern place, 1..=arg_count means argument places,
-    /// the rest means inner function places.
-    ///
-    /// [`Body::locals`]: https://doc.rust-lang.org/nightly/nightly-rustc/rustc_public/mir/struct.Body.html#structfield.locals
-    pub locals: ThinVec<usize>,
-    pub access: FxIndexSet<AdtAccess>,
-}
-
-impl LocalsAccess {
-    /// Sort and deduplicate indices.
-    fn deduplicate_indices(&mut self) {
-        self.locals.sort_unstable();
-        self.locals.dedup();
-        self.locals.shrink_to_fit();
-    }
-
-    /// Returns true if the local index refers to any argument.
-    pub fn is_argument(&self, arg_count: usize) -> bool {
-        self.locals
-            .iter()
-            .any(|&idx| idx < arg_count + 1 && idx != 0)
-    }
-}
-
-/// Reference to rederence to the adt or its field.
-#[derive(Clone, PartialEq, Eq, Hash)]
-pub enum AdtAccess {
-    Ref,
-    MutRef,
-    Deref,
-    Plain,
-    RefVariant(VariantIdx),
-    MutRefVariant(VariantIdx),
-    DerefVariant(VariantIdx),
-    Unknown(Box<[ProjectionElem]>),
-}
-
-impl fmt::Debug for AdtAccess {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Ref => write!(f, "Ref"),
-            Self::MutRef => write!(f, "MutRef"),
-            Self::Deref => write!(f, "Deref"),
-            Self::Plain => write!(f, "Plain"),
-            Self::RefVariant(arg0) => f.debug_tuple("RefVariant").field(&arg0.to_index()).finish(),
-            Self::MutRefVariant(arg0) => f
-                .debug_tuple("MutRefVariant")
-                .field(&arg0.to_index())
-                .finish(),
-            Self::DerefVariant(arg0) => f
-                .debug_tuple("DerefVariant")
-                .field(&arg0.to_index())
-                .finish(),
-            Self::Unknown(arg0) => f
-                .debug_tuple("Unknown")
-                .field(&format_args!("{arg0:?}"))
-                .finish(),
-        }
     }
 }

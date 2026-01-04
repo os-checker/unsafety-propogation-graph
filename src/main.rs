@@ -12,6 +12,7 @@ extern crate rustc_span;
 use rustc_middle::ty::TyCtxt;
 use std::ops::ControlFlow;
 
+mod adt;
 mod analyze_fn_def;
 mod info_adt;
 mod info_fn;
@@ -29,13 +30,14 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
     let local_crate = rustc_public::local_crate();
     let fn_defs = local_crate.fn_defs();
 
+    let mut cache_adt = Default::default();
     let writer = output::Writer::new(&local_crate.name);
     let mut map_fn = FxIndexMap::with_capacity_and_hasher(fn_defs.len(), Default::default());
 
     for fn_def in fn_defs {
         if let Some(body) = fn_def.body() {
             let collector = analyze_fn_def::collect(&body);
-            let finfo = info_fn::FnInfo::new(collector, &body);
+            let finfo = info_fn::FnInfo::new(collector, &body, &mut cache_adt);
 
             let out_func = output::Function::new(fn_def, &finfo, &body, tcx);
             out_func.dump(&writer);

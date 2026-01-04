@@ -1,6 +1,7 @@
 use crate::{
+    adt::Adt as RawAdt,
     info_adt::{Access as RawAccess, AdtInfo},
-    info_fn::{Adt as RawAdt, FnInfo},
+    info_fn::FnInfo,
     utils::FxIndexMap,
 };
 use rustc_middle::ty::TyCtxt;
