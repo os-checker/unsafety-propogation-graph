@@ -3,8 +3,9 @@
     <Flow :raw="raw" />
   </div>
   <div :style="codeStyle">
-    <CodeSrc :src="src" />
-    <CodeMarkdown :doc="doc" />
+    <CodeSrc :src="raw.src" />
+    <CodeSrc :src="raw.mir" />
+    <!-- <CodeMarkdown :doc="doc" /> -->
   </div>
 </template>
 
@@ -34,10 +35,7 @@ $fetch(url)
   .then(text => raw.value = JSON.parse(text as string))
   .catch(err => console.log(err));
 
-const src = `
-async fn main() {
-  spawn().await;
-}`
+watch(raw, val => console.log(val));
 
 const doc = `
 # Hello World
