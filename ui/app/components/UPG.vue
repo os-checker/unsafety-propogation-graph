@@ -39,20 +39,6 @@ $fetch(url)
   .then(text => raw.value = JSON.parse(text as string))
   .catch(err => console.log(err));
 
-watch(raw, val => console.log(val));
-
-const doc = `
-# Hello World
-
-This is a *plain* **line**.
-
-\`\`\`rust
-fn main() {
-    let a = String::new();
-}
-\`\`\`
-`;
-
 const leftPanel = ref(Panel.Src);
 const rightPanel = ref(Panel.Mir);
 </script>

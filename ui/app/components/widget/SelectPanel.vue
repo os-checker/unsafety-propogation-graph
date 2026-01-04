@@ -6,7 +6,7 @@
 
   <CodeSrc v-if="selected === Panel.Src" :src="raw.src" />
   <CodeSrc v-else-if="selected === Panel.Mir" :src="raw.mir" />
-  <CodeMarkdown v-else-if="selected === Panel.Doc" :doc="raw.span" />
+  <CodeMarkdown v-else-if="selected === Panel.Doc" :doc="raw.doc" />
 </template>
 
 <script setup lang="ts">
