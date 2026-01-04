@@ -4,14 +4,11 @@
   </div>
   <div :style="codeStyle">
     <div class="relative">
-      <WidgetSelectPanel v-model="leftPanel" />
-      <CodeSrc :src="raw.src" />
+      <WidgetSelectPanel v-model="leftPanel" :raw="raw" />
     </div>
     <div class="relative">
-      <WidgetSelectPanel v-model="rightPanel" />
-      <CodeSrc :src="raw.mir" />
+      <WidgetSelectPanel v-model="rightPanel" :raw="raw" />
     </div>
-    <!-- <CodeMarkdown :doc="doc" /> -->
   </div>
 </template>
 
