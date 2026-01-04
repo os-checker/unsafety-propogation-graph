@@ -5,11 +5,12 @@ use crate::{
 };
 use rustc_middle::ty::TyCtxt;
 use rustc_public::{
-    CrateDef,
+    CrateDef, DefId,
     mir::{Body, Safety},
     rustc_internal::internal,
     ty::{FnDef, Span},
 };
+use rustc_span::def_id::DefId as IDefId;
 use serde::Serialize;
 use std::{fs, io, path::PathBuf};
 
@@ -22,6 +23,7 @@ pub struct Function {
     pub span: String,
     pub src: String,
     pub mir: String,
+    pub doc: String,
 }
 
 impl Function {
@@ -54,6 +56,7 @@ impl Function {
             span,
             src,
             mir,
+            doc: doc_string(fn_def.def_id(), tcx),
         }
     }
 
@@ -71,11 +74,31 @@ pub struct Adt {
     pub access_field: Vec<Access>,
     pub span: String,
     pub src: String,
+    /// The index 0 refers to the adt doc.
+    /// The rest refers to the variant docs.
+    pub docs: Vec<String>,
 }
 
 impl Adt {
     pub fn new(adt: &RawAdt, info: &AdtInfo, tcx: TyCtxt) -> Adt {
         let [span, src] = span_to_src(adt.def.span(), tcx);
+
+        let mut docs = Vec::with_capacity(adt.def.num_variants() + 1);
+        docs.push(doc_string(adt.def.def_id(), tcx));
+        for variant in adt.def.variants_iter() {
+            let variant = internal(tcx, variant);
+
+            // Enum or unit variant constructor.
+            if let Some((_, did)) = &variant.ctor {
+                docs.push(doc_string_internel_did(*did, tcx));
+            }
+
+            // Fields. FIXME: we have to handle struct fields and enum variant fields.
+            for field in &variant.fields {
+                docs.push(doc_string_internel_did(field.did, tcx));
+            }
+        }
+
         Adt {
             name: adt.to_string(tcx),
             constructors: v_fn_name(&info.constructors),
@@ -84,6 +107,7 @@ impl Adt {
             access_field: info.fields.iter().map(Access::new).collect(),
             span,
             src,
+            docs,
         }
     }
 
@@ -123,6 +147,25 @@ fn span_to_src(span: Span, tcx: TyCtxt) -> [String; 2] {
     let src = src_map.span_to_snippet(span).unwrap_or_default();
 
     [span_str, src]
+}
+
+fn doc_string(def_id: DefId, tcx: TyCtxt) -> String {
+    let did = internal(tcx, def_id);
+    doc_string_internel_did(did, tcx)
+}
+
+fn doc_string_internel_did(did: IDefId, tcx: TyCtxt) -> String {
+    use rustc_hir::Attribute;
+    use rustc_hir::attrs::AttributeKind;
+    use std::fmt::Write;
+
+    let mut buf = String::new();
+    for attr in tcx.get_all_attrs(did) {
+        if let Attribute::Parsed(AttributeKind::DocComment { comment, .. }) = attr {
+            _ = write!(&mut buf, "{comment}");
+        }
+    }
+    buf
 }
 
 pub enum Writer {

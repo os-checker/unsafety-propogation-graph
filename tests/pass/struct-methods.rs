@@ -1,6 +1,11 @@
 #![allow(dead_code)]
 
+/// First line.
+/// Second line.
+///
+/// Forth line.
 struct S {
+    /// Field comments.
     s: String,
 }
 
@@ -21,6 +26,7 @@ impl S {
         _ = &mut self.s;
     }
 
+    /// Update the field.
     fn write_field(&mut self) {
         self.s = String::new();
     }
