@@ -1,5 +1,5 @@
 <template>
-  <div class="border border-gray-300" v-html="renderedHtml"></div>
+  <div v-html="renderedHtml"></div>
 </template>
 
 <script setup lang="ts">
