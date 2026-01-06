@@ -1,7 +1,9 @@
 <template>
   <UApp>
-    Flow:
-    <UColorModeButton />
-    <UPG />
+    <!-- Flow: -->
+    <!-- <UColorModeButton /> -->
+    <div class="upg">
+      <UPG />
+    </div>
   </UApp>
 </template>

@@ -27,21 +27,22 @@ watch(() => props.raw, val => {
   const root: Node = { id: val.name, label: val.name, position: POS };
   const callees: Node[] = val.callees.map(callee => ({ id: `c@${callee}`, type: "input", label: callee, position: POS }));
   const adts: Node[] = Object.keys(val.adts).map(adt => ({ id: `adt@${adt}`, type: "default", label: adt, position: POS }));
-  const adts_access: Node[] = Object.values(val.adts).flat().map(access => ({ id: `access@${access}`, type: "output", label: access, position: POS }));
-  const nodes = [root, ...callees, ...adts, ...adts_access];
+  // const adts_access: Node[] = Object.values(val.adts).flat().map(access => ({ id: `access@${access}`, type: "output", label: access, position: POS }));
+  // const nodes = [root, ...callees, ...adts, ...adts_access];
+  const nodes = [root, ...callees, ...adts];
 
   let edges: Edge[] = [];
   // Connect the root with leaves.
   callees.forEach(leaf => edges.push({ id: `e@${root.id}-${leaf.id}`, source: leaf.id, target: root.id, }));
   adts.forEach(leaf => edges.push({ id: `e@${root.id}-${leaf.id}`, source: root.id, target: leaf.id, }));
   // Connect adt and access.
-  for (const [adt, v_access] of Object.entries(val.adts)) {
-    for (const access of v_access) {
-      const id_adt = `adt@${adt}`;
-      const id_access = `access@${access}`;
-      edges.push({ id: `e@${id_adt}-${id_access}`, source: id_adt, target: id_access });
-    }
-  }
+  // for (const [adt, v_access] of Object.entries(val.adts)) {
+  //   for (const access of v_access) {
+  //     const id_adt = `adt@${adt}`;
+  //     const id_access = `access@${access}`;
+  //     edges.push({ id: `e@${id_adt}-${id_access}`, source: id_adt, target: id_access });
+  //   }
+  // }
 
   data.value = { nodes, edges };
 })

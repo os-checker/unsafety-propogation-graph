@@ -24,3 +24,26 @@ html.dark .shiki span {
   text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden; /* disable scrollbars */
+}
+
+.upg {
+  display: grid;
+  grid-template-columns: 70% 30%;
+  height: 100vh;
+  width: 100vw;
+}
+
+.upg-left {
+  height: 100%;
+}
+
+.upg-right {
+  height: 100%;
+}
