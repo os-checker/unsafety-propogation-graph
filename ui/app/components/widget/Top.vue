@@ -16,16 +16,13 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
+import { ViewType, ALL_VIEW_TYPES } from '~/lib/topbar';
 
 const menuItems = ref<NavigationMenuItem[]>([{ label: "function", }]);
 
-enum ViewType {
-  Callees = "Callees",
-  Adts = "Adts",
-}
+const viewSelected = defineModel<ViewType[]>('viewSelected');
 
-const viewSelected = ref<ViewType[]>([ViewType.Callees, ViewType.Adts]);
-const views = ref<ViewType[]>([ViewType.Callees, ViewType.Adts]);
+const views = ref<ViewType[]>(ALL_VIEW_TYPES);
 </script>
 
 <style lang="css">

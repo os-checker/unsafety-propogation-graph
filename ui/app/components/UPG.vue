@@ -1,6 +1,6 @@
 <template>
   <div class="upg-left">
-    <WidgetTop />
+    <WidgetTop v-model:viewSelected="viewSelected" />
     <Flow :raw="raw" />
   </div>
   <div class="upg-right">
@@ -17,6 +17,9 @@
 import type { Function } from "~/lib/output"
 import { EMPTY_FUNCTION } from "~/lib/output"
 import { Panel } from "~/lib/panel"
+import { ALL_VIEW_TYPES, ViewType } from "~/lib/topbar";
+
+const viewSelected = ref<ViewType[]>(ALL_VIEW_TYPES);
 
 const url = "https://raw.githubusercontent.com/os-checker/unsafety-propagation-graph-data/refs/heads/main/test/poc/function/f.json"
 
