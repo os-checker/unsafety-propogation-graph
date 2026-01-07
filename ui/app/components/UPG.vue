@@ -1,5 +1,6 @@
 <template>
   <div class="upg-left">
+    <WidgetTop />
     <Flow :raw="raw" />
   </div>
   <div class="upg-right">
