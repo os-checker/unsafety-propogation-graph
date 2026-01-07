@@ -1,10 +1,11 @@
 use crate::adt::{Adt, AdtAccess, CacheAdt, LocalsAccess, VaraintFieldIdx, new_adt};
 use crate::analyze_fn_def::Collector;
-use crate::utils::{FxIndexMap, FxIndexSet, SmallVec};
+use crate::utils::{FxIndexMap, FxIndexSet, SmallVec, ThinVec};
 use rustc_public::{
     mir::{Body, Mutability, ProjectionElem, mono::Instance},
     ty::{GenericArgKind, RigidTy, Ty, TyKind},
 };
+use safety_parser::safety::PropertiesAndReason;
 
 pub struct FnInfo {
     /// The owned return type.
@@ -20,6 +21,7 @@ pub struct FnInfo {
     /// All types and places mentioned in the function.
     #[expect(unused)]
     pub collector: Collector,
+    pub v_sp: ThinVec<PropertiesAndReason>,
     /// Direct callees in the function. The order is decided by MirVisitor,
     /// and called functions is monomorphized.
     pub callees: FxIndexSet<Instance>,
@@ -28,7 +30,12 @@ pub struct FnInfo {
 }
 
 impl FnInfo {
-    pub fn new(collector: Collector, body: &Body, cache: &mut CacheAdt) -> FnInfo {
+    pub fn new(
+        collector: Collector,
+        body: &Body,
+        v_sp: ThinVec<PropertiesAndReason>,
+        cache: &mut CacheAdt,
+    ) -> FnInfo {
         let mut callees = FxIndexSet::default();
         for ty in &collector.v_ty {
             if let RigidTy::FnDef(fn_def, args) = &ty.ty
@@ -61,6 +68,7 @@ impl FnInfo {
             ret_adts,
             arg_count: body.arg_locals().len(),
             collector,
+            v_sp,
             callees,
             adts,
         }

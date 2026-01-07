@@ -11,6 +11,7 @@ extern crate rustc_public_bridge;
 extern crate rustc_span;
 
 use rustc_middle::ty::TyCtxt;
+use rustc_public::CrateDef;
 use std::ops::ControlFlow;
 
 mod adt;
@@ -20,7 +21,7 @@ mod info_fn;
 mod output;
 
 mod utils;
-pub use utils::{FxIndexMap, FxIndexSet};
+pub use utils::{FxIndexMap, FxIndexSet, ThinVec};
 
 fn main() {
     let rustc_args: Vec<_> = std::env::args().collect();
@@ -37,8 +38,16 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
 
     for fn_def in fn_defs {
         if let Some(body) = fn_def.body() {
+            let v_sp: ThinVec<_> = fn_def
+                .all_tool_attrs()
+                .iter()
+                .flat_map(|attr| {
+                    safety_parser::safety::parse_attr_and_get_properties(attr.as_str())
+                })
+                .collect();
+
             let collector = analyze_fn_def::collect(&body);
-            let finfo = info_fn::FnInfo::new(collector, &body, &mut cache_adt);
+            let finfo = info_fn::FnInfo::new(collector, &body, v_sp, &mut cache_adt);
 
             let out_func = output::Function::new(fn_def, &finfo, &body, tcx);
             out_func.dump(&writer);

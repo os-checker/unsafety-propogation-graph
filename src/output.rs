@@ -12,6 +12,10 @@ use rustc_public::{
     ty::{FnDef, Span},
 };
 use rustc_span::def_id::DefId as IDefId;
+use safety_parser::{
+    configuration::Tag as TagSpec,
+    safety::{PropertiesAndReason, Property},
+};
 use serde::Serialize;
 use std::{fs, io, path::PathBuf};
 
@@ -25,6 +29,7 @@ pub struct Function {
     pub src: String,
     pub mir: String,
     pub doc: String,
+    pub tags: Tags,
 }
 
 impl Function {
@@ -58,6 +63,7 @@ impl Function {
             src,
             mir,
             doc: doc_string(fn_def.def_id(), tcx),
+            tags: Tags::new(&info.v_sp),
         }
     }
 
@@ -159,6 +165,32 @@ impl Access {
 pub struct VariantField {
     pub name: String,
     pub doc: String,
+}
+
+#[derive(Debug, Default, Serialize)]
+pub struct Tags {
+    pub tags: Vec<Property>,
+    pub spec: FxIndexMap<String, TagSpec>,
+    pub docs: Vec<Box<str>>,
+}
+
+impl Tags {
+    pub fn new(v_sp: &[PropertiesAndReason]) -> Self {
+        let mut this = Self::default();
+        for sp in v_sp {
+            this.docs.push(sp.gen_hover_doc());
+            this.tags.extend_from_slice(&sp.tags);
+            for tag in &sp.tags {
+                let name = tag.tag.name();
+                if let Some(spec) = tag.tag.get_spec()
+                    && this.spec.get(name).is_none()
+                {
+                    this.spec.insert(name.to_owned(), spec.clone());
+                }
+            }
+        }
+        this
+    }
 }
 
 fn v_fn_name(v: &[FnDef]) -> Vec<String> {
