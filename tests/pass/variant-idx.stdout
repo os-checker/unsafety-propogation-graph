@@ -17,7 +17,12 @@
   "span": "$DIR/variant-idx.rs:2:5: 4:6",
   "src": "fn mutate_a(&mut self) {/n        self.a = String::new();/n    }",
   "mir": "fn S::mutate_a(_1: &mut S) -> () {/n    let mut _0: ();/n    let mut _2: std::string::String;/n    debug self => _1;/n    bb0: {/n        _2 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        drop(((*_1).0: std::string::String)) -> [return: bb2, unwind: bb3];/n    }/n    bb2: {/n        ((*_1).0: std::string::String) = move _2;/n        return;/n    }/n    bb3: {/n        ((*_1).0: std::string::String) = move _2;/n        resume;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {
@@ -41,7 +46,12 @@
   "span": "$DIR/variant-idx.rs:6:5: 9:6",
   "src": "fn mutate(&mut self) {/n        self.a = String::new();/n        self.b.push(' ');/n    }",
   "mir": "fn S::mutate(_1: &mut S) -> () {/n    let mut _0: ();/n    let mut _2: std::string::String;/n    let  _3: ();/n    let mut _4: &mut std::string::String;/n    debug self => _1;/n    bb0: {/n        _2 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        drop(((*_1).0: std::string::String)) -> [return: bb2, unwind: bb3];/n    }/n    bb2: {/n        ((*_1).0: std::string::String) = move _2;/n        _4 = &mut ((*_1).1: std::string::String);/n        _3 = std::string::String::push(move _4, ' ') -> [return: bb4, unwind continue];/n    }/n    bb3: {/n        ((*_1).0: std::string::String) = move _2;/n        resume;/n    }/n    bb4: {/n        return;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {
@@ -63,7 +73,12 @@
   "span": "$DIR/variant-idx.rs:13:5: 17:6",
   "src": "fn mutate1(&mut self) {/n        if let E::A(a) = self {/n            a.push(' ');/n        }/n    }",
   "mir": "fn E::mutate1(_1: &mut E) -> () {/n    let mut _0: ();/n    let mut _2: isize;/n    let  _3: &mut std::string::String;/n    let  _4: ();/n    debug self => _1;/n    debug a => _3;/n    bb0: {/n        _2 = discriminant((*_1));/n        switchInt(move _2) -> [0: bb1, 1: bb2, otherwise: bb3];/n    }/n    bb1: {/n        _3 = &mut (((*_1) as variant#0).0: std::string::String);/n        _4 = std::string::String::push(_3, ' ') -> [return: bb2, unwind continue];/n    }/n    bb2: {/n        return;/n    }/n    bb3: {/n        unreachable;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {
@@ -89,7 +104,12 @@
   "span": "$DIR/variant-idx.rs:19:5: 24:6",
   "src": "fn mutate2(&mut self) {/n        match self {/n            E::A(a) => *a = String::new(),/n            E::B(b) => b.push(' '),/n        };/n    }",
   "mir": "fn E::mutate2(_1: &mut E) -> () {/n    let mut _0: ();/n    let  _2: ();/n    let mut _3: isize;/n    let  _4: &mut std::string::String;/n    let mut _5: std::string::String;/n    let  _6: &mut std::string::String;/n    debug self => _1;/n    debug a => _4;/n    debug b => _6;/n    bb0: {/n        _3 = discriminant((*_1));/n        switchInt(move _3) -> [0: bb3, 1: bb2, otherwise: bb1];/n    }/n    bb1: {/n        unreachable;/n    }/n    bb2: {/n        _6 = &mut (((*_1) as variant#1).0: std::string::String);/n        _2 = std::string::String::push(_6, ' ') -> [return: bb7, unwind continue];/n    }/n    bb3: {/n        _4 = &mut (((*_1) as variant#0).0: std::string::String);/n        _5 = std::string::String::new() -> [return: bb4, unwind continue];/n    }/n    bb4: {/n        drop((*_4)) -> [return: bb5, unwind: bb6];/n    }/n    bb5: {/n        (*_4) = move _5;/n        goto -> bb7;/n    }/n    bb6: {/n        (*_4) = move _5;/n        resume;/n    }/n    bb7: {/n        return;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {
@@ -111,7 +131,12 @@
   "span": "$DIR/variant-idx.rs:26:5: 31:6",
   "src": "fn mutate_plain(&mut self) {/n        *self = match self {/n            E::A(_) => E::A(String::new()),/n            E::B(_) => E::B(String::new()),/n        };/n    }",
   "mir": "fn E::mutate_plain(_1: &mut E) -> () {/n    let mut _0: ();/n    let mut _2: E;/n    let mut _3: isize;/n    let mut _4: std::string::String;/n    let mut _5: std::string::String;/n    debug self => _1;/n    bb0: {/n        _3 = discriminant((*_1));/n        switchInt(move _3) -> [0: bb3, 1: bb2, otherwise: bb1];/n    }/n    bb1: {/n        unreachable;/n    }/n    bb2: {/n        _5 = std::string::String::new() -> [return: bb5, unwind continue];/n    }/n    bb3: {/n        _4 = std::string::String::new() -> [return: bb4, unwind continue];/n    }/n    bb4: {/n        _2 = E::A(move _4);/n        goto -> bb6;/n    }/n    bb5: {/n        _2 = E::B(move _5);/n        goto -> bb6;/n    }/n    bb6: {/n        drop((*_1)) -> [return: bb7, unwind: bb8];/n    }/n    bb7: {/n        (*_1) = move _2;/n        return;/n    }/n    bb8: {/n        (*_1) = move _2;/n        resume;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {

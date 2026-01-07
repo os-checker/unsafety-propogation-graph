@@ -7,7 +7,12 @@
   "span": "$DIR/free-functions.rs:3:1: 3:10",
   "src": "fn a() {}",
   "mir": "fn a() -> () {/n    let mut _0: ();/n    bb0: {/n        return;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }
 
 {
@@ -18,5 +23,10 @@
   "span": "$DIR/free-functions.rs:4:1: 4:18",
   "src": "fn b(_: usize) {}",
   "mir": "fn b(_1: usize) -> () {/n    let mut _0: ();/n    bb0: {/n        return;/n    }/n}/n",
-  "doc": ""
+  "doc": "",
+  "tags": {
+    "tags": [],
+    "spec": {},
+    "docs": []
+  }
 }

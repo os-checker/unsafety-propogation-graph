@@ -1,4 +1,7 @@
 #![allow(dead_code)]
+#![feature(register_tool)]
+#![register_tool(rapx)]
+
 /// Record secret buffer with its size.
 struct SecretRegion {
     buffer: *mut u32,
@@ -6,14 +9,17 @@ struct SecretRegion {
 }
 
 impl SecretRegion {
+    #[rapx::requires(ValidPtr(v), InitializedInLen(l))]
     pub unsafe fn from(v: *mut u32, l: usize) -> Self {
         SecretRegion { buffer: v, len: l }
     }
 
+    #[rapx::requires(hazard.InitializedInLen(l))]
     pub unsafe fn set_len(&mut self, l: usize) {
         self.len = l;
     }
 
+    #[rapx::requires(ValidPtr(ptr), ValidPtr(self.buffer, offset))]
     pub unsafe fn xor_secret_region(&self, ptr: *mut u32, offset: isize) -> u32 {
         let mut src_value = ptr.read();
         let secret_ptr = self.buffer;
