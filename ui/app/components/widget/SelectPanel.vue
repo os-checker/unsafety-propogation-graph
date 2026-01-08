@@ -9,6 +9,7 @@
   <div class="upg-panel-content">
     <CodeSrc v-if="selected === Panel.Src" :src="raw.src" :isWrapped="isWrapped" />
     <CodeSrc v-else-if="selected === Panel.Mir" :src="raw.mir" :isWrapped="isWrapped" />
+    <CodeSrc v-else-if="selected === Panel.Raw" :src="JSON.stringify(raw, undefined, 2)" :isWrapped="isWrapped" />
     <CodeMarkdown v-else-if="selected === Panel.Doc" :doc="raw.doc" />
   </div>
 </template>
