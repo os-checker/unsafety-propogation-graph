@@ -13,6 +13,10 @@
       "Plain"
     ]
   },
+  "path": [
+    "constructors",
+    "a"
+  ],
   "span": "$DIR/constructors.rs:7:1: 9:2",
   "src": "fn a() -> S {/n    S { s: String::new() }/n}",
   "mir": "fn a() -> S {/n    let mut _0: S;/n    let mut _1: std::string::String;/n    bb0: {/n        _1 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        _0 = S(move _1);/n        return;/n    }/n}/n",
@@ -35,6 +39,11 @@
       "Plain"
     ]
   },
+  "path": [
+    "constructors",
+    "{impl#0}",
+    "new"
+  ],
   "span": "$DIR/constructors.rs:12:5: 14:6",
   "src": "fn new() -> S {/n        a()/n    }",
   "mir": "fn S::new() -> S {/n    let mut _0: S;/n    bb0: {/n        _0 = a() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        return;/n    }/n}/n",

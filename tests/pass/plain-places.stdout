@@ -16,6 +16,10 @@
       "Plain"
     ]
   },
+  "path": [
+    "plain_places",
+    "main"
+  ],
   "span": "$DIR/plain-places.rs:1:1: 8:2",
   "src": "fn main() {/n    let s = S {/n        a: String::new(),/n        b: String::new(),/n    };/n    let ea = E::A(String::new());/n    let eb = E::B(String::new());/n}",
   "mir": "fn main() -> () {/n    let mut _0: ();/n    let  _1: S;/n    let mut _2: std::string::String;/n    let mut _3: std::string::String;/n    let  _4: E;/n    let mut _5: std::string::String;/n    let  _6: E;/n    let mut _7: std::string::String;/n    debug s => _1;/n    debug ea => _4;/n    debug eb => _6;/n    bb0: {/n        _2 = std::string::String::new() -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        _3 = std::string::String::new() -> [return: bb2, unwind: bb10];/n    }/n    bb2: {/n        _1 = S(move _2, move _3);/n        _5 = std::string::String::new() -> [return: bb3, unwind: bb9];/n    }/n    bb3: {/n        _4 = E::A(move _5);/n        _7 = std::string::String::new() -> [return: bb4, unwind: bb8];/n    }/n    bb4: {/n        _6 = E::B(move _7);/n        drop(_6) -> [return: bb5, unwind: bb8];/n    }/n    bb5: {/n        drop(_4) -> [return: bb6, unwind: bb9];/n    }/n    bb6: {/n        drop(_1) -> [return: bb7, unwind continue];/n    }/n    bb7: {/n        return;/n    }/n    bb8: {/n        drop(_4) -> [return: bb9, unwind terminate];/n    }/n    bb9: {/n        drop(_1) -> [return: bb11, unwind terminate];/n    }/n    bb10: {/n        drop(_2) -> [return: bb11, unwind terminate];/n    }/n    bb11: {/n        resume;/n    }/n}/n",

@@ -25,6 +25,7 @@ pub struct Function {
     pub safe: bool,
     pub callees: Vec<String>,
     pub adts: FxIndexMap<String, Vec<String>>,
+    pub path: Vec<String>,
     pub span: String,
     pub src: String,
     pub mir: String,
@@ -59,6 +60,7 @@ impl Function {
                     )
                 })
                 .collect(),
+            path: def_path(fn_def.def_id(), tcx),
             span,
             src,
             mir,
@@ -195,6 +197,14 @@ impl Tags {
 
 fn v_fn_name(v: &[FnDef]) -> Vec<String> {
     v.iter().map(|c| c.name()).collect()
+}
+
+fn def_path(def_id: DefId, tcx: TyCtxt) -> Vec<String> {
+    let def_path = tcx.def_path(internal(tcx, def_id));
+    let mut v_path = Vec::with_capacity(def_path.data.len() + 1);
+    v_path.push(tcx.crate_name(def_path.krate).to_string());
+    v_path.extend(def_path.data.iter().map(|d| d.as_sym(false).to_string()));
+    v_path
 }
 
 /// Span to string and source code.

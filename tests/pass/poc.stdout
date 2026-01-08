@@ -34,6 +34,10 @@
       "Plain"
     ]
   },
+  "path": [
+    "poc",
+    "f"
+  ],
   "span": "$DIR/poc.rs:33:1: 42:2",
   "src": "fn f() {/n    let v = vec![0xDEADBEEFu32, 0xCAFEBABE, 0x12345678];/n    let mut data = [0x11111111u32, 0x22222222, 0x33333333];/n    let (p, l, _c) = v.into_raw_parts();/n    let mut s = unsafe { SecretRegion::from(p, 0) };/n    unsafe {/n        s.set_len(l);/n        s.xor_secret_region(data.as_mut_ptr(), 0);/n    }/n}",
   "mir": "fn f() -> () {/n    let mut _0: ();/n    let  _1: std::vec::Vec<u32>;/n    let mut _2: std::boxed::Box<[u32]>;/n    let mut _3: *mut u8;/n    let mut _4: std::boxed::Box<[u32; 3]>;/n    let mut _5: [u32; 3];/n    let  _6: *mut u32;/n    let  _7: usize;/n    let  _8: usize;/n    let mut _9: (*mut u32, usize, usize);/n    let mut _10: SecretRegion;/n    let  _11: ();/n    let mut _12: &mut SecretRegion;/n    let  _13: u32;/n    let mut _14: &SecretRegion;/n    let mut _15: *mut u32;/n    let mut _16: &mut [u32];/n    let mut _17: &mut [u32; 3];/n    let mut _18: *const [u32; 3];/n    let mut _19: std::ptr::NonNull<[u32; 3]>;/n    let mut _20: std::ptr::Unique<[u32; 3]>;/n    let mut _21: *const [u32; 3];/n    let mut _22: *const ();/n    let mut _23: usize;/n    let mut _24: usize;/n    let mut _25: usize;/n    let mut _26: bool;/n    let mut _27: *const ();/n    let mut _28: usize;/n    let mut _29: bool;/n    let mut _30: bool;/n    let mut _31: bool;/n    let mut _32: bool;/n    debug v => _1;/n    debug data => _5;/n    debug p => _6;/n    debug l => _7;/n    debug _c => _8;/n    debug s => _10;/n    bb0: {/n        _3 = alloc::alloc::exchange_malloc(<[u32; 3] as std::mem::SizedTypeProperties>::SIZE, <[u32; 3] as std::mem::SizedTypeProperties>::ALIGN) -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        _18 = move _3 as *const [u32; 3];/n        _19 = NonNull(move _18);/n        _20 = Unique(move _19, std::marker::PhantomData::<[u32; 3]>);/n        _4 = Box(move _20, std::alloc::Global);/n        _21 = ((_4.0: std::ptr::Unique<[u32; 3]>).0: std::ptr::NonNull<[u32; 3]>) as *const [u32; 3];/n        _22 = _21 as *const ();/n        _23 = _22 as usize;/n        _24 = Sub(<[u32; 3] as std::mem::SizedTypeProperties>::ALIGN, 1_usize);/n        _25 = BitAnd(_23, _24);/n        _26 = Eq(_25, 0_usize);/n        assert(_26, /"misaligned pointer dereference: address must be a multiple of {} but is {}/",<[u32; 3] as std::mem::SizedTypeProperties>::ALIGN, _23) -> [success: bb8, unwind unreachable];/n    }/n    bb2: {/n        _5 = [286331153_u32, 572662306_u32, 858993459_u32];/n        _9 = std::vec::Vec::<u32>::into_raw_parts(_1) -> [return: bb3, unwind continue];/n    }/n    bb3: {/n        _6 = (_9.0: *mut u32);/n        _7 = (_9.1: usize);/n        _8 = (_9.2: usize);/n        _10 = SecretRegion::from(_6, 0_usize) -> [return: bb4, unwind continue];/n    }/n    bb4: {/n        _12 = &mut _10;/n        _11 = SecretRegion::set_len(move _12, _7) -> [return: bb5, unwind continue];/n    }/n    bb5: {/n        _14 = &_10;/n        _17 = &mut _5;/n        _16 = move _17 as &mut [u32];/n        _15 = core::slice::<impl [u32]>::as_mut_ptr(move _16) -> [return: bb6, unwind continue];/n    }/n    bb6: {/n        _13 = SecretRegion::xor_secret_region(move _14, move _15, 0_isize) -> [return: bb7, unwind continue];/n    }/n    bb7: {/n        return;/n    }/n    bb8: {/n        _27 = _21 as *const ();/n        _28 = _27 as usize;/n        _29 = Ne(<[u32; 3] as std::mem::SizedTypeProperties>::SIZE, 0_usize);/n        _30 = Eq(_28, 0_usize);/n        _31 = BitAnd(_30, _29);/n        _32 = Not(_31);/n        assert(_32, /"null pointer dereference occurred/") -> [success: bb9, unwind unreachable];/n    }/n    bb9: {/n        (*_21) = [3735928559_u32, 3405691582_u32, 305419896_u32];/n        _2 = _4 as std::boxed::Box<[u32]>;/n        _1 = std::slice::<impl [u32]>::into_vec::<std::alloc::Global>(move _2) -> [return: bb2, unwind continue];/n    }/n}/n",
@@ -54,6 +58,11 @@
       "Plain"
     ]
   },
+  "path": [
+    "poc",
+    "{impl#0}",
+    "from"
+  ],
   "span": "$DIR/poc.rs:13:5: 15:6",
   "src": "pub unsafe fn from(v: *mut u32, l: usize) -> Self {/n        SecretRegion { buffer: v, len: l }/n    }",
   "mir": "fn SecretRegion::from(_1: *mut u32, _2: usize) -> SecretRegion {/n    let mut _0: SecretRegion;/n    debug v => _1;/n    debug l => _2;/n    bb0: {/n        _0 = SecretRegion(_1, _2);/n        return;/n    }/n}/n",
@@ -96,6 +105,11 @@
       "MutRef"
     ]
   },
+  "path": [
+    "poc",
+    "{impl#0}",
+    "set_len"
+  ],
   "span": "$DIR/poc.rs:18:5: 20:6",
   "src": "pub unsafe fn set_len(&mut self, l: usize) {/n        self.len = l;/n    }",
   "mir": "fn SecretRegion::set_len(_1: &mut SecretRegion, _2: usize) -> () {/n    let mut _0: ();/n    debug self => _1;/n    debug l => _2;/n    bb0: {/n        ((*_1).1: usize) = _2;/n        return;/n    }/n}/n",
@@ -132,6 +146,11 @@
       "Ref"
     ]
   },
+  "path": [
+    "poc",
+    "{impl#0}",
+    "xor_secret_region"
+  ],
   "span": "$DIR/poc.rs:23:5: 30:6",
   "src": "pub unsafe fn xor_secret_region(&self, ptr: *mut u32, offset: isize) -> u32 {/n        let mut src_value = ptr.read();/n        let secret_ptr = self.buffer;/n        let secret_region_ptr = secret_ptr.offset(offset);/n        let secret_value = secret_region_ptr.read();/n        src_value ^= secret_value;/n        src_value/n    }",
   "mir": "fn SecretRegion::xor_secret_region(_1: &SecretRegion, _2: *mut u32, _3: isize) -> u32 {/n    let mut _0: u32;/n    let mut _4: u32;/n    let  _5: *mut u32;/n    let  _6: *mut u32;/n    let  _7: u32;/n    debug self => _1;/n    debug ptr => _2;/n    debug offset => _3;/n    debug src_value => _4;/n    debug secret_ptr => _5;/n    debug secret_region_ptr => _6;/n    debug secret_value => _7;/n    bb0: {/n        _4 = std::ptr::mut_ptr::<impl *mut u32>::read(_2) -> [return: bb1, unwind continue];/n    }/n    bb1: {/n        _5 = ((*_1).0: *mut u32);/n        _6 = std::ptr::mut_ptr::<impl *mut u32>::offset(_5, _3) -> [return: bb2, unwind continue];/n    }/n    bb2: {/n        _7 = std::ptr::mut_ptr::<impl *mut u32>::read(_6) -> [return: bb3, unwind continue];/n    }/n    bb3: {/n        _4 = BitXor(_4, _7);/n        _0 = _4;/n        return;/n    }/n}/n",
