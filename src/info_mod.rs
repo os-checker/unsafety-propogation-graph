@@ -39,15 +39,18 @@ pub fn mod_tree(tcx: TyCtxt) -> FreeItemTree {
                         let fn_name = assoc.ident.as_str();
                         match assoc.impl_kind {
                             ImplItemImplKind::Inherent { .. } => {
-                                implementor_path.push(DefPath::new_assoc_fn(fn_name));
+                                implementor_path.push(DefPath::new(DefPathKind::AssocFn, fn_name));
                             }
                             ImplItemImplKind::Trait {
                                 trait_item_def_id, ..
                             } => {
                                 if let Ok(did) = trait_item_def_id {
-                                    let trait_name = tcx.def_path_str(did);
-                                    implementor_path.push(DefPath::new_impl_trait(trait_name));
-                                    implementor_path.push(DefPath::new_assoc_fn(fn_name));
+                                    let mut trait_name = def_path(did, tcx);
+                                    // Put SelfTy under trait path.
+                                    trait_name.extend(std::mem::take(&mut implementor_path));
+                                    implementor_path = trait_name;
+                                    implementor_path
+                                        .push(DefPath::new(DefPathKind::AssocFn, fn_name));
                                 }
                             }
                         }
@@ -73,7 +76,7 @@ fn push_plain_item_path(
     v_path: &mut Vec<Vec<DefPath>>,
 ) {
     let mut path = vec![DefPath::new(kind, ident.as_str())];
-    push_parent_paths(&mut path, &item_id, tcx);
+    push_parent_paths(&mut path, item_id, tcx);
     v_path.push(path);
 }
 
@@ -82,7 +85,7 @@ fn push_parent_paths(path: &mut Vec<DefPath>, item_id: &ItemId, tcx: TyCtxt) {
         if let OwnerNode::Item(owner_item) = owner_node
             && let ItemKind::Mod(mod_ident, _) = owner_item.kind
         {
-            path.push(DefPath::new_mod(mod_ident.as_str()));
+            path.push(DefPath::new(DefPathKind::Mod, mod_ident.as_str()));
         }
     }
     path.reverse();
@@ -112,38 +115,6 @@ impl DefPath {
             vec![Self::new(DefPathKind::SelfTy, typ.to_string())]
         }
     }
-
-    pub fn new_mod(name: &str) -> Self {
-        Self::new(DefPathKind::Mod, name)
-    }
-
-    // pub fn new_fn(name: &str) -> Self {
-    //     Self::new(DefPathKind::Fn, name.into())
-    // }
-
-    pub fn new_assoc_fn(name: &str) -> Self {
-        Self::new(DefPathKind::AssocFn, name)
-    }
-
-    // pub fn new_struct(name: &str) -> Self {
-    //     Self::new(DefPathKind::Struct, name.into())
-    // }
-    //
-    // pub fn new_enum(name: &str) -> Self {
-    //     Self::new(DefPathKind::Enum, name.into())
-    // }
-    //
-    // pub fn new_union(name: &str) -> Self {
-    //     Self::new(DefPathKind::Union, name.into())
-    // }
-    //
-    // pub fn new_trait_decl(name: &str) -> Self {
-    //     Self::new(DefPathKind::TraitDecl, name.into())
-    // }
-
-    pub fn new_impl_trait<S: Into<Box<str>>>(name: S) -> Self {
-        Self::new(DefPathKind::ImplTrait, name.into())
-    }
 }
 
 /// ADT path can be `[Mod, Adt]` where Adt is one of Struct, Enum, and Union.
@@ -154,7 +125,7 @@ impl DefPath {
 /// * `[Mod, Struct, ImplTrait, AssocFn]` for a trait function.
 /// * `[Mod, TraitDecl, AssocFn]` for a trait function definition.
 /// * `[SelfTy, AssocFn]` for an unusual associated function like `impl &Adt`.
-/// * `[SelfTy, ImplTrait, AssocFn]` for an unusual trait function like `impl Trait for &Adt`,
+/// * `[Mod, ImplTrait, SelfTy, AssocFn]` for an unusual trait function like `impl Trait for &Adt`,
 ///   `impl Trait for (Adt1, Adt2)`, `impl<T> Trait for T`, or even `impl<T: Trait> Trait for T::U`.
 #[derive(Debug, Serialize)]
 pub enum DefPathKind {
@@ -179,7 +150,8 @@ fn def_path(did: DefId, tcx: TyCtxt) -> Vec<DefPath> {
         DefKind::Struct => DefPathKind::Struct,
         DefKind::Enum => DefPathKind::Enum,
         DefKind::Union => DefPathKind::Union,
-        DefKind::Trait => DefPathKind::TraitDecl,
+        // TraitDecl has been handled in ItemKind::Trait; and def_path is called in ItemKind::Impl.
+        DefKind::Trait => DefPathKind::ImplTrait,
         _ => return default(),
     };
 
