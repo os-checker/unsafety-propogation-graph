@@ -126,3 +126,49 @@
     }
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "constructors"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "constructors"
+      },
+      {
+        "kind": "Fn",
+        "name": "a"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "constructors"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "constructors"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "new"
+      }
+    ]
+  ],
+  "navi": {}
+}

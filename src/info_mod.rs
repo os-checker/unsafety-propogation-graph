@@ -4,15 +4,27 @@ use rustc_middle::ty::{TyCtxt, TyKind};
 use rustc_span::Ident;
 use serde::Serialize;
 
-pub struct FreeItemTree {
+#[derive(Debug, Serialize)]
+pub struct Navigation {
     pub flatten: FlattenFreeItems,
-    pub navi: FxIndexMap<usize, Vec<usize>>,
+    pub navi: Navi,
 }
 
 pub type FlattenFreeItems = Vec<Vec<DefPath>>;
+pub type Navi = FxIndexMap<usize, Vec<usize>>;
 
-pub fn mod_tree(tcx: TyCtxt) -> FreeItemTree {
+fn to_navi(v_path: &mut FlattenFreeItems) -> Navi {
+    v_path.sort_unstable();
+    Navi::default()
+}
+
+pub fn mod_tree(tcx: TyCtxt) -> Navigation {
     let mut v_path = FlattenFreeItems::new();
+
+    // Root module.
+    v_path.push(vec![DefPath::crate_root(tcx)]);
+
+    // Free items.
     for item_id in tcx.hir_free_items() {
         let item = tcx.hir_item(item_id);
         match &item.kind {
@@ -62,9 +74,10 @@ pub fn mod_tree(tcx: TyCtxt) -> FreeItemTree {
         }
     }
 
-    FreeItemTree {
+    let navi = to_navi(&mut v_path);
+    Navigation {
         flatten: v_path,
-        navi: Default::default(),
+        navi,
     }
 }
 
@@ -82,16 +95,20 @@ fn push_plain_item_path(
 
 fn push_parent_paths(path: &mut Vec<DefPath>, item_id: &ItemId, tcx: TyCtxt) {
     for (_, owner_node) in tcx.hir_parent_owner_iter(item_id.hir_id()) {
-        if let OwnerNode::Item(owner_item) = owner_node
-            && let ItemKind::Mod(mod_ident, _) = owner_item.kind
-        {
-            path.push(DefPath::new(DefPathKind::Mod, mod_ident.as_str()));
+        match owner_node {
+            OwnerNode::Item(owner_item) => {
+                if let ItemKind::Mod(mod_ident, _) = owner_item.kind {
+                    path.push(DefPath::new(DefPathKind::Mod, mod_ident.as_str()));
+                }
+            }
+            OwnerNode::Crate(_) => path.push(DefPath::crate_root(tcx)),
+            _ => (),
         }
     }
     path.reverse();
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq, PartialOrd, Eq, Ord)]
 pub struct DefPath {
     pub kind: DefPathKind,
     pub name: Box<str>,
@@ -107,13 +124,17 @@ impl DefPath {
 
     pub fn from_ty(ty: &Ty, tcx: TyCtxt) -> Vec<Self> {
         let hir_id = ty.hir_id;
-        let typeck = tcx.typeck(hir_id.owner.def_id);
-        let typ = typeck.node_type(hir_id);
+        let typ = tcx.type_of(hir_id.owner).skip_binder();
         if let TyKind::Adt(def, _) = typ.kind() {
             def_path(def.did(), tcx)
         } else {
             vec![Self::new(DefPathKind::SelfTy, typ.to_string())]
         }
+    }
+
+    fn crate_root(tcx: TyCtxt) -> Self {
+        let crate_name = tcx.crate_name(rustc_span::def_id::CrateNum::ZERO);
+        DefPath::new(DefPathKind::Mod, crate_name.as_str())
     }
 }
 
@@ -127,7 +148,7 @@ impl DefPath {
 /// * `[SelfTy, AssocFn]` for an unusual associated function like `impl &Adt`.
 /// * `[Mod, ImplTrait, SelfTy, AssocFn]` for an unusual trait function like `impl Trait for &Adt`,
 ///   `impl Trait for (Adt1, Adt2)`, `impl<T> Trait for T`, or even `impl<T: Trait> Trait for T::U`.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, PartialEq, PartialOrd, Eq, Ord)]
 pub enum DefPathKind {
     Mod,
     Fn,
@@ -155,26 +176,19 @@ fn def_path(did: DefId, tcx: TyCtxt) -> Vec<DefPath> {
         _ => return default(),
     };
 
-    if let Some((_, kind)) = tcx.assoc_parent(did) {
-        assert!(
-            matches!(kind, DefKind::Mod),
-            "We suppose FnDef {did:?} to be an accessible fn item from module path"
-        );
-        let mut v_path = Vec::new();
-        let mod_path = tcx.def_path(did);
-        let crate_name = tcx.crate_name(mod_path.krate);
-        v_path.push(DefPath::new(DefPathKind::Mod, crate_name.as_str()));
-        for data in &mod_path.data {
-            if let DefPathData::TypeNs(sym) = data.data {
-                v_path.push(DefPath::new(DefPathKind::Mod, sym.as_str()));
-            } else {
-                unimplemented!("{data:?} is not a type namespace, check out {did:?}")
-            }
+    let mut v_path = Vec::new();
+    let mod_path = tcx.def_path(did);
+    let crate_name = tcx.crate_name(mod_path.krate);
+    v_path.push(DefPath::new(DefPathKind::Mod, crate_name.as_str()));
+    for data in &mod_path.data {
+        if let DefPathData::TypeNs(sym) = data.data {
+            v_path.push(DefPath::new(DefPathKind::Mod, sym.as_str()));
+        } else {
+            unimplemented!("{data:?} is not a type namespace, check out {did:?}")
         }
-
-        let last_path_seg = v_path.last_mut().unwrap();
-        last_path_seg.kind = def_path_kind;
     }
 
-    default()
+    let last_path_seg = v_path.last_mut().unwrap();
+    last_path_seg.kind = def_path_kind;
+    v_path
 }

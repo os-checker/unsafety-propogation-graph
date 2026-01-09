@@ -258,7 +258,7 @@ impl Writer {
         }
     }
 
-    fn dump_json(&self, parent: &str, fname_stem: &str, data: &impl Serialize) {
+    pub fn dump_json(&self, parent: &str, fname_stem: &str, data: &impl Serialize) {
         match self {
             Writer::BaseDir(dir) => {
                 let parent = dir.join(parent);

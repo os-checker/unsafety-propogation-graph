@@ -304,3 +304,105 @@
     }
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "mutate"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "mutate_a"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Enum",
+        "name": "E"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Enum",
+        "name": "E"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "mutate1"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Enum",
+        "name": "E"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "mutate2"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "variant_idx"
+      },
+      {
+        "kind": "Enum",
+        "name": "E"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "mutate_plain"
+      }
+    ]
+  ],
+  "navi": {}
+}

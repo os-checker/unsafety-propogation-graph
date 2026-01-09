@@ -33,6 +33,8 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
     let local_crate = rustc_public::local_crate();
     let fn_defs = local_crate.fn_defs();
 
+    let navi = info_mod::mod_tree(tcx);
+
     let mut cache_adt = Default::default();
     let writer = output::Writer::new(&local_crate.name);
     let mut map_fn = FxIndexMap::with_capacity_and_hasher(fn_defs.len(), Default::default());
@@ -62,6 +64,8 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
         let out_adt = output::Adt::new(adt, adt_info, tcx);
         out_adt.dump(&writer);
     }
+
+    writer.dump_json("navi", "navi", &navi);
 
     ControlFlow::Break(())
 }

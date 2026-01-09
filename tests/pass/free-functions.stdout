@@ -38,3 +38,35 @@
     "docs": []
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "free_functions"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "free_functions"
+      },
+      {
+        "kind": "Fn",
+        "name": "a"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "free_functions"
+      },
+      {
+        "kind": "Fn",
+        "name": "b"
+      }
+    ]
+  ],
+  "navi": {}
+}

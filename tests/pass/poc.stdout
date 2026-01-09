@@ -448,3 +448,77 @@
     }
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      },
+      {
+        "kind": "Fn",
+        "name": "f"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      },
+      {
+        "kind": "Struct",
+        "name": "SecretRegion"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      },
+      {
+        "kind": "Struct",
+        "name": "SecretRegion"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "from"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      },
+      {
+        "kind": "Struct",
+        "name": "SecretRegion"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "set_len"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "poc"
+      },
+      {
+        "kind": "Struct",
+        "name": "SecretRegion"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "xor_secret_region"
+      }
+    ]
+  ],
+  "navi": {}
+}

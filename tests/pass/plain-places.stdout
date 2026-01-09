@@ -147,3 +147,45 @@
     }
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "plain_places"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "plain_places"
+      },
+      {
+        "kind": "Fn",
+        "name": "main"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "plain_places"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "plain_places"
+      },
+      {
+        "kind": "Enum",
+        "name": "E"
+      }
+    ]
+  ],
+  "navi": {}
+}

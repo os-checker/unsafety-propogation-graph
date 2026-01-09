@@ -238,3 +238,109 @@
     }
   }
 }
+
+{
+  "flatten": [
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "field_mut_ref"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "field_ref"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "new"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "s_mut_ref"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "s_ref"
+      }
+    ],
+    [
+      {
+        "kind": "Mod",
+        "name": "struct_methods"
+      },
+      {
+        "kind": "Struct",
+        "name": "S"
+      },
+      {
+        "kind": "AssocFn",
+        "name": "write_field"
+      }
+    ]
+  ],
+  "navi": {}
+}
