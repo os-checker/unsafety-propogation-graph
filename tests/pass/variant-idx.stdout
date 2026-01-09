@@ -16,7 +16,7 @@
   },
   "path": [
     "variant_idx",
-    "{impl#0}",
+    "S",
     "mutate_a"
   ],
   "span": "$DIR/variant-idx.rs:2:5: 4:6",
@@ -50,7 +50,7 @@
   },
   "path": [
     "variant_idx",
-    "{impl#0}",
+    "S",
     "mutate"
   ],
   "span": "$DIR/variant-idx.rs:6:5: 9:6",
@@ -82,7 +82,7 @@
   },
   "path": [
     "variant_idx",
-    "{impl#1}",
+    "E",
     "mutate1"
   ],
   "span": "$DIR/variant-idx.rs:13:5: 17:6",
@@ -118,7 +118,7 @@
   },
   "path": [
     "variant_idx",
-    "{impl#1}",
+    "E",
     "mutate2"
   ],
   "span": "$DIR/variant-idx.rs:19:5: 24:6",
@@ -150,7 +150,7 @@
   },
   "path": [
     "variant_idx",
-    "{impl#1}",
+    "E",
     "mutate_plain"
   ],
   "span": "$DIR/variant-idx.rs:26:5: 31:6",
@@ -306,7 +306,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -418,5 +418,14 @@
       6,
       7
     ]
+  },
+  "name_to_path": {
+    "variant_idx::S::mutate_a": 3,
+    "variant_idx::S::mutate": 2,
+    "variant_idx::E::mutate1": 5,
+    "variant_idx::E::mutate2": 6,
+    "variant_idx::E::mutate_plain": 7,
+    "variant_idx::S": 1,
+    "variant_idx::E": 4
   }
 }

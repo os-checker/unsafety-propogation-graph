@@ -60,7 +60,7 @@
   },
   "path": [
     "poc",
-    "{impl#0}",
+    "SecretRegion",
     "from"
   ],
   "span": "$DIR/poc.rs:13:5: 15:6",
@@ -107,7 +107,7 @@
   },
   "path": [
     "poc",
-    "{impl#0}",
+    "SecretRegion",
     "set_len"
   ],
   "span": "$DIR/poc.rs:18:5: 20:6",
@@ -148,7 +148,7 @@
   },
   "path": [
     "poc",
-    "{impl#0}",
+    "SecretRegion",
     "xor_secret_region"
   ],
   "span": "$DIR/poc.rs:23:5: 30:6",
@@ -450,7 +450,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -530,5 +530,12 @@
       4,
       5
     ]
+  },
+  "name_to_path": {
+    "poc::SecretRegion": 2,
+    "poc::SecretRegion::from": 3,
+    "poc::SecretRegion::set_len": 4,
+    "poc::SecretRegion::xor_secret_region": 5,
+    "poc::f": 1
   }
 }

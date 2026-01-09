@@ -52,7 +52,7 @@ fn run(tcx: TyCtxt) -> ControlFlow<(), ()> {
             let collector = analyze_fn_def::collect(&body);
             let finfo = info_fn::FnInfo::new(collector, &body, v_sp, &mut cache_adt);
 
-            let out_func = output::Function::new(fn_def, &finfo, &body, tcx);
+            let out_func = output::Function::new(fn_def, &finfo, &body, tcx, &navi);
             out_func.dump(&writer);
 
             map_fn.insert(fn_def, finfo);

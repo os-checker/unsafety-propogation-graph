@@ -13,7 +13,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "new"
   ],
   "span": "$DIR/struct-methods.rs:13:5: 15:6",
@@ -38,7 +38,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "s_ref"
   ],
   "span": "$DIR/struct-methods.rs:17:5: 17:23",
@@ -63,7 +63,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "s_mut_ref"
   ],
   "span": "$DIR/struct-methods.rs:19:5: 19:31",
@@ -88,7 +88,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "field_ref"
   ],
   "span": "$DIR/struct-methods.rs:21:5: 23:6",
@@ -113,7 +113,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "field_mut_ref"
   ],
   "span": "$DIR/struct-methods.rs:25:5: 27:6",
@@ -144,7 +144,7 @@
   },
   "path": [
     "struct_methods",
-    "{impl#0}",
+    "S",
     "write_field"
   ],
   "span": "$DIR/struct-methods.rs:30:5: 32:6",
@@ -240,7 +240,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -354,5 +354,14 @@
       6,
       7
     ]
+  },
+  "name_to_path": {
+    "struct_methods::S": 1,
+    "struct_methods::S::new": 4,
+    "struct_methods::S::s_ref": 6,
+    "struct_methods::S::s_mut_ref": 5,
+    "struct_methods::S::field_ref": 3,
+    "struct_methods::S::field_mut_ref": 2,
+    "struct_methods::S::write_field": 7
   }
 }

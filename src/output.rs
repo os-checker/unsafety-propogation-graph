@@ -2,6 +2,7 @@ use crate::{
     adt::Adt as RawAdt,
     info_adt::{Access as RawAccess, AdtInfo},
     info_fn::FnInfo,
+    info_mod::Navigation,
     utils::FxIndexMap,
 };
 use rustc_middle::ty::TyCtxt;
@@ -34,7 +35,7 @@ pub struct Function {
 }
 
 impl Function {
-    pub fn new(fn_def: FnDef, info: &FnInfo, body: &Body, tcx: TyCtxt) -> Self {
+    pub fn new(fn_def: FnDef, info: &FnInfo, body: &Body, tcx: TyCtxt, navi: &Navigation) -> Self {
         let name = fn_def.name();
         let [span, src] = span_to_src(body.span, tcx);
         let mir = {
@@ -60,7 +61,7 @@ impl Function {
                     )
                 })
                 .collect(),
-            path: def_path(fn_def.def_id(), tcx),
+            path: def_path(fn_def.def_id(), tcx, navi),
             span,
             src,
             mir,
@@ -199,12 +200,12 @@ fn v_fn_name(v: &[FnDef]) -> Vec<String> {
     v.iter().map(|c| c.name()).collect()
 }
 
-fn def_path(def_id: DefId, tcx: TyCtxt) -> Vec<String> {
-    let def_path = tcx.def_path(internal(tcx, def_id));
-    let mut v_path = Vec::with_capacity(def_path.data.len() + 1);
-    v_path.push(tcx.crate_name(def_path.krate).to_string());
-    v_path.extend(def_path.data.iter().map(|d| d.as_sym(false).to_string()));
-    v_path
+fn def_path(def_id: DefId, tcx: TyCtxt, navi: &Navigation) -> Vec<String> {
+    let did = internal(tcx, def_id);
+    let def_path_str = tcx.def_path_str(did);
+    let def_path_str = format!("{}::{def_path_str}", navi.crate_root());
+    navi.name_to_path(&def_path_str)
+        .unwrap_or_else(|| vec![def_path_str])
 }
 
 /// Span to string and source code.

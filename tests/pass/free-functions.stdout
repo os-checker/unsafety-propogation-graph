@@ -40,7 +40,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -73,5 +73,9 @@
       1,
       2
     ]
+  },
+  "name_to_path": {
+    "free_functions::a": 1,
+    "free_functions::b": 2
   }
 }

@@ -5,17 +5,33 @@ use rustc_span::Ident;
 use serde::Serialize;
 use std::mem;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Default, Serialize)]
 pub struct Navigation {
-    pub flatten: FlattenFreeItems,
+    pub data: FlattenFreeItems,
     pub navi: Navi,
+    pub name_to_path: FxIndexMap<String, usize>,
+}
+
+impl Navigation {
+    pub fn name_to_path(&self, def_path_str: &str) -> Option<Vec<String>> {
+        let idx = *self.name_to_path.get(def_path_str)?;
+        Some(self.data[idx].iter().map(|p| p.name.to_string()).collect())
+    }
+
+    pub fn crate_root(&self) -> &str {
+        &self.data[0][0].name
+    }
 }
 
 pub type ItemPath = Vec<DefPath>;
 pub type FlattenFreeItems = Vec<ItemPath>;
 pub type Navi = FxIndexMap<usize, Vec<usize>>;
 
-fn to_navi(v_path: &mut FlattenFreeItems, crate_root: &DefPath) -> Navi {
+fn to_navi(
+    v_path: &mut FlattenFreeItems,
+    crate_root: &DefPath,
+    map_name_to_path: FxIndexMap<String, ItemPath>,
+) -> (Navi, FxIndexMap<String, usize>) {
     #[derive(Debug, Default)]
     struct Meta {
         parent_paths: FxIndexMap<DefPathKind, ItemPath>,
@@ -90,15 +106,26 @@ fn to_navi(v_path: &mut FlattenFreeItems, crate_root: &DefPath) -> Navi {
         }
     }
 
+    // Construct mapping from def_path_str to DefPath.
+    let map_name_to_path_idx: FxIndexMap<_, _> = map_name_to_path
+        .into_iter()
+        .map(|(name, path)| (name, map_paths.get(&path).unwrap().item_idx))
+        .collect();
     // Flatten all paths.
     v_path.extend(map_paths.into_keys());
 
-    navi
+    assert_eq!(
+        v_path[0][0].name, crate_root.name,
+        "{:?} must be crate root",
+        v_path[0]
+    );
+    (navi, map_name_to_path_idx)
 }
 
 pub fn mod_tree(tcx: TyCtxt) -> Navigation {
     let mut v_path = FlattenFreeItems::new();
     let crate_root = DefPath::crate_root(tcx);
+    let mut map_name_to_path = FxIndexMap::<String, ItemPath>::default();
 
     // Free items: those items may be inaccesible from user's perspective,
     // and item paths are as per source code definitions.
@@ -113,6 +140,7 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                     tcx,
                     &mut v_path,
                     &crate_root,
+                    &mut map_name_to_path,
                 );
             }
             ItemKind::Struct(ident, ..) => {
@@ -123,6 +151,7 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                     tcx,
                     &mut v_path,
                     &crate_root,
+                    &mut map_name_to_path,
                 );
             }
             ItemKind::Enum(ident, ..) => {
@@ -133,6 +162,7 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                     tcx,
                     &mut v_path,
                     &crate_root,
+                    &mut map_name_to_path,
                 );
             }
             ItemKind::Union(ident, ..) => {
@@ -143,6 +173,7 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                     tcx,
                     &mut v_path,
                     &crate_root,
+                    &mut map_name_to_path,
                 );
             }
             ItemKind::Trait(_, _, _, ident, ..) => {
@@ -153,12 +184,13 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                     tcx,
                     &mut v_path,
                     &crate_root,
+                    &mut map_name_to_path,
                 );
             }
             ItemKind::Impl(imp) => {
                 for id in imp.items {
                     let assoc = tcx.hir_impl_item(*id);
-                    if matches!(assoc.kind, ImplItemKind::Fn(..)) {
+                    if let ImplItemKind::Fn(_, body) = assoc.kind {
                         let mut implementor_path = DefPath::from_ty(imp.self_ty, tcx);
                         let fn_name = assoc.ident.as_str();
                         match assoc.impl_kind {
@@ -178,7 +210,10 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
                                 }
                             }
                         }
-                        v_path.push(implementor_path);
+                        v_path.push(implementor_path.clone());
+                        let def_path_str = tcx.def_path_str(body.hir_id.owner);
+                        let def_path_str = format!("{}::{def_path_str}", crate_root.name);
+                        map_name_to_path.insert(def_path_str, implementor_path);
                     }
                 }
             }
@@ -186,10 +221,11 @@ pub fn mod_tree(tcx: TyCtxt) -> Navigation {
         }
     }
 
-    let navi = to_navi(&mut v_path, &crate_root);
+    let (navi, name_to_path) = to_navi(&mut v_path, &crate_root, map_name_to_path);
     Navigation {
-        flatten: v_path,
+        data: v_path,
         navi,
+        name_to_path,
     }
 }
 
@@ -198,12 +234,16 @@ fn push_plain_item_path(
     ident: &Ident,
     item_id: &ItemId,
     tcx: TyCtxt,
-    v_path: &mut Vec<Vec<DefPath>>,
+    v_path: &mut Vec<ItemPath>,
     crate_root: &DefPath,
+    map_name_to_path: &mut FxIndexMap<String, ItemPath>,
 ) {
     let mut path = vec![DefPath::new(kind, ident.as_str())];
     push_parent_paths(&mut path, item_id, tcx, crate_root);
-    v_path.push(path);
+    v_path.push(path.clone());
+    let def_path_str = tcx.def_path_str(item_id.owner_id.to_def_id());
+    let def_path_str = format!("{}::{def_path_str}", crate_root.name);
+    map_name_to_path.insert(def_path_str, path);
 }
 
 fn push_parent_paths(path: &mut Vec<DefPath>, item_id: &ItemId, tcx: TyCtxt, crate_root: &DefPath) {

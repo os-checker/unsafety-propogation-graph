@@ -41,7 +41,7 @@
   },
   "path": [
     "constructors",
-    "{impl#0}",
+    "S",
     "new"
   ],
   "span": "$DIR/constructors.rs:12:5: 14:6",
@@ -128,7 +128,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -178,5 +178,10 @@
     "2": [
       3
     ]
+  },
+  "name_to_path": {
+    "constructors::S": 2,
+    "constructors::a": 1,
+    "constructors::S::new": 3
   }
 }

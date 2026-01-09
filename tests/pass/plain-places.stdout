@@ -149,7 +149,7 @@
 }
 
 {
-  "flatten": [
+  "data": [
     [
       {
         "kind": "Mod",
@@ -193,5 +193,10 @@
       2,
       3
     ]
+  },
+  "name_to_path": {
+    "plain_places::main": 1,
+    "plain_places::S": 2,
+    "plain_places::E": 3
   }
 }

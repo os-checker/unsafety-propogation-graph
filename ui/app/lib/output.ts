@@ -41,3 +41,24 @@ export const EMPTY_FUNCTION: Function = {
   src: "", mir: "", doc: "", tags: { tags: [], spec: {}, docs: [] },
 };
 
+export enum DefPathKind {
+  Mod,
+  Fn,
+  AssocFn,
+  Struct,
+  Enum,
+  Union,
+  TraitDecl,
+  SelfTy,
+  ImplTrait,
+}
+export type DefPath = {
+  kind: DefPathKind,
+  name: string,
+}
+export type ItemPath = DefPath[];
+export type Navigation = {
+  data: ItemPath[],
+  navi: { [key: number]: number[] },
+  name_to_path: { [key: string]: number },
+}
