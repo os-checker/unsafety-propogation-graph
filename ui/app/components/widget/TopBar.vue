@@ -1,6 +1,6 @@
 <template>
   <div class="top-menu">
-    <UNavigationMenu :items="navi_menu" class="w-1/2" />
+    <UNavigationMenu :items="navi_menu" class="w-1/2" trailing-icon="tabler:chevron-right" />
 
     <div class="top-menu mr-2 gap-4">
       <div>
