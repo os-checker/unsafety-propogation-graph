@@ -70,3 +70,36 @@ html, body {
   @apply border border-gray-300;
   overflow: auto;
 }
+
+.top-menu {
+  @apply flex items-center justify-between;
+}
+
+/* def color */
+.def-mod {
+  @apply text-sky-600 dark:text-sky-400
+}
+
+.def-fn {
+  @apply text-teal-600 dark:text-teal-400
+}
+
+.def-struct {
+  @apply text-amber-600 dark:text-amber-400
+}
+
+.def-enum {
+  @apply text-rose-600 dark:text-rose-400
+}
+
+.def-union {
+  @apply text-indigo-600 dark:text-indigo-400
+}
+
+.def-trait {
+  @apply text-orange-600 dark:text-orange-400
+}
+
+.def-ty {
+  @apply text-pink-600 dark:text-pink-400
+}
