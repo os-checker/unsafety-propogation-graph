@@ -11,16 +11,34 @@ export const ALL_VIEW_TYPES: ViewType[] = [
 // Navigation
 
 export enum DefPathKind {
-  Mod,
-  Fn,
-  AssocFn,
-  Struct,
-  Enum,
-  Union,
-  TraitDecl,
-  SelfTy,
-  ImplTrait,
+  Mod = "Mod",
+  Fn = "Fn",
+  AssocFn = "AssocFn",
+  Struct = "Struct",
+  Enum = "Enum",
+  Union = "Union",
+  TraitDecl = "TraitDecl",
+  SelfTy = "SelfTy",
+  ImplTrait = "ImplTrait",
 }
+
+/** Returns an icon string for a DefPathKind.
+ * The icon must be maintained in nuxt config.*/
+export function icon(kind: DefPathKind): string {
+  switch (kind) {
+    case DefPathKind.Mod: return "tabler:letter-m";
+    case DefPathKind.Fn: return "tabler:square-letter-f";
+    case DefPathKind.AssocFn: return "tabler:square-letter-f";
+    case DefPathKind.Struct: return "tabler:letter-s";
+    case DefPathKind.Enum: return "tabler:letter-e";
+    case DefPathKind.Union: return "tabler:letter-u";
+    case DefPathKind.TraitDecl: return "tabler:letter-t";
+    case DefPathKind.SelfTy: return "tabler:letter-t-small";
+    case DefPathKind.ImplTrait: return "tabler:letter-t";
+    default: return "tabler:alert-circle";
+  }
+}
+
 export type DefPath = {
   kind: DefPathKind,
   name: string,

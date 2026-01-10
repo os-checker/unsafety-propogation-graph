@@ -6,13 +6,21 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   sourcemap: { server: false, client: false, },
   icon: {
-    serverBundle: { collections: ['codicon'] },
+    serverBundle: { collections: ['tabler'] },
     clientBundle: {
       // https://icones.js.org/collection/codicon
+      // https://icones.js.org/collection/tabler
       icons: [
-        'codicon:symbol-structure',
-        'codicon:symbol-method',
-        'codicon:symbol-class',
+        'tabler:letter-m', // module
+        'tabler:letter-s', // struct
+        'tabler:letter-e', // enum
+        'tabler:letter-u', // union
+        'tabler:letter-t', // trait
+        'tabler:letter-t-small', // SelfTy
+        'tabler:square-letter-f',// function
+        'tabler:letter-m-small', // method
+        'tabler:square-rounded-letter-p-filled', // safety property
+        'tabler:alert-circle', // something wrong
       ],
     }
   },

@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
-import { ViewType, ALL_VIEW_TYPES, EMPTY_NAVI, NAVI_URL, type Navigation } from '~/lib/topbar';
+import { ViewType, ALL_VIEW_TYPES, EMPTY_NAVI, NAVI_URL, type Navigation, icon } from '~/lib/topbar';
 
 const viewSelected = defineModel<ViewType[]>('viewSelected');
 
@@ -32,10 +32,10 @@ const navi_menu = computed<NavigationMenuItem[]>(() => {
   const root = data[0]?.[0];
   if (!root) return [];
 
-  let children = nav[0]!.map(item => ({ label: item.name, icon: "codicon:symbol-namespace" }));
+  let children = nav[0]!.map(item => ({ label: item.name, icon: icon(item.kind) }));
   let tree: NavigationMenuItem[] = [
     {
-      label: root.name, icon: "codicon:symbol-structure", children
+      label: root.name, icon: icon(root.kind), children
     },
     // ...children
   ];
