@@ -63,18 +63,26 @@
     ]
   ],
   "navi": {
-    "0": [
-      {
-        "idx": 1,
-        "name": "a",
-        "kind": "Fn"
-      },
-      {
-        "idx": 2,
-        "name": "b",
-        "kind": "Fn"
+    "0": {
+      "subitems": [
+        {
+          "idx": 1,
+          "name": "a",
+          "kind": "Fn"
+        },
+        {
+          "idx": 2,
+          "name": "b",
+          "kind": "Fn"
+        }
+      ],
+      "groups": {
+        "Fn": [
+          1,
+          2
+        ]
       }
-    ]
+    }
   },
   "name_to_path": {
     "free_functions::a": 1,

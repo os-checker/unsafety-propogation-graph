@@ -1,5 +1,6 @@
 #![feature(rustc_private)]
 
+extern crate itertools;
 extern crate rustc_abi;
 extern crate rustc_data_structures;
 extern crate rustc_driver;

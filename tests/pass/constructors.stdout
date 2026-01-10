@@ -164,25 +164,42 @@
     ]
   ],
   "navi": {
-    "0": [
-      {
-        "idx": 1,
-        "name": "a",
-        "kind": "Fn"
-      },
-      {
-        "idx": 2,
-        "name": "S",
-        "kind": "Struct"
+    "0": {
+      "subitems": [
+        {
+          "idx": 1,
+          "name": "a",
+          "kind": "Fn"
+        },
+        {
+          "idx": 2,
+          "name": "S",
+          "kind": "Struct"
+        }
+      ],
+      "groups": {
+        "Fn": [
+          1
+        ],
+        "Struct": [
+          2
+        ]
       }
-    ],
-    "2": [
-      {
-        "idx": 3,
-        "name": "new",
-        "kind": "AssocFn"
+    },
+    "2": {
+      "subitems": [
+        {
+          "idx": 3,
+          "name": "new",
+          "kind": "AssocFn"
+        }
+      ],
+      "groups": {
+        "AssocFn": [
+          3
+        ]
       }
-    ]
+    }
   },
   "name_to_path": {
     "constructors::S": 2,

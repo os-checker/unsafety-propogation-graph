@@ -385,47 +385,74 @@
     ]
   ],
   "navi": {
-    "0": [
-      {
-        "idx": 1,
-        "name": "S",
-        "kind": "Struct"
-      },
-      {
-        "idx": 4,
-        "name": "E",
-        "kind": "Enum"
+    "0": {
+      "subitems": [
+        {
+          "idx": 1,
+          "name": "S",
+          "kind": "Struct"
+        },
+        {
+          "idx": 4,
+          "name": "E",
+          "kind": "Enum"
+        }
+      ],
+      "groups": {
+        "Struct": [
+          1
+        ],
+        "Enum": [
+          4
+        ]
       }
-    ],
-    "1": [
-      {
-        "idx": 2,
-        "name": "mutate",
-        "kind": "AssocFn"
-      },
-      {
-        "idx": 3,
-        "name": "mutate_a",
-        "kind": "AssocFn"
+    },
+    "1": {
+      "subitems": [
+        {
+          "idx": 2,
+          "name": "mutate",
+          "kind": "AssocFn"
+        },
+        {
+          "idx": 3,
+          "name": "mutate_a",
+          "kind": "AssocFn"
+        }
+      ],
+      "groups": {
+        "AssocFn": [
+          2,
+          3
+        ]
       }
-    ],
-    "4": [
-      {
-        "idx": 5,
-        "name": "mutate1",
-        "kind": "AssocFn"
-      },
-      {
-        "idx": 6,
-        "name": "mutate2",
-        "kind": "AssocFn"
-      },
-      {
-        "idx": 7,
-        "name": "mutate_plain",
-        "kind": "AssocFn"
+    },
+    "4": {
+      "subitems": [
+        {
+          "idx": 5,
+          "name": "mutate1",
+          "kind": "AssocFn"
+        },
+        {
+          "idx": 6,
+          "name": "mutate2",
+          "kind": "AssocFn"
+        },
+        {
+          "idx": 7,
+          "name": "mutate_plain",
+          "kind": "AssocFn"
+        }
+      ],
+      "groups": {
+        "AssocFn": [
+          5,
+          6,
+          7
+        ]
       }
-    ]
+    }
   },
   "name_to_path": {
     "variant_idx::S::mutate_a": 3,

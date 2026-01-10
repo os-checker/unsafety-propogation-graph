@@ -1,4 +1,5 @@
 use crate::FxIndexMap;
+use itertools::Itertools;
 use rustc_hir::{ImplItemImplKind, ImplItemKind, ItemId, ItemKind, OwnerNode, Ty, def_id::DefId};
 use rustc_middle::ty::{TyCtxt, TyKind};
 use rustc_span::Ident;
@@ -27,10 +28,17 @@ impl Navigation {
 
 pub type ItemPath = Vec<DefPath>;
 pub type FlattenFreeItems = Vec<ItemPath>;
-pub type Navi = FxIndexMap<usize, Vec<NaviItem>>;
+pub type Navi = FxIndexMap<usize, NaviItem>;
+
+#[derive(Debug, Default, Serialize)]
+pub struct NaviItem {
+    subitems: Vec<SubNaviItem>,
+    /// The usize idx refers to subitems.
+    groups: FxIndexMap<DefPathKind, Vec<usize>>,
+}
 
 #[derive(Debug, Serialize)]
-pub struct NaviItem {
+pub struct SubNaviItem {
     /// Data idx.
     idx: usize,
     /// Item name without parent path.
@@ -112,18 +120,25 @@ fn to_navi(
         for parent_path in current_meta.parent_paths.values() {
             let parent_meta = map_paths.get(parent_path).unwrap();
 
-            let navi_item = &current_item[parent_path.len()];
-            let navi_item = NaviItem {
+            let sub_navi_item = &current_item[parent_path.len()];
+            let sub_navi_item = SubNaviItem {
                 idx: current_meta.item_idx,
-                name: navi_item.name.clone(),
-                kind: navi_item.kind,
+                name: sub_navi_item.name.clone(),
+                kind: sub_navi_item.kind,
             };
 
-            if let Some(v) = navi.get_mut(&parent_meta.item_idx) {
-                v.push(navi_item);
-            } else {
-                navi.insert(parent_meta.item_idx, vec![navi_item]);
-            }
+            navi.entry(parent_meta.item_idx)
+                .or_default()
+                .subitems
+                .push(sub_navi_item);
+        }
+    }
+
+    // Group sub navi items.
+    for navi_item in navi.values_mut() {
+        let groups = navi_item.subitems.iter().group_by(|item| item.kind);
+        for (kind, item) in groups.into_iter() {
+            navi_item.groups.insert(kind, item.map(|v| v.idx).collect());
         }
     }
 

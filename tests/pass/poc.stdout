@@ -506,35 +506,54 @@
     ]
   ],
   "navi": {
-    "0": [
-      {
-        "idx": 1,
-        "name": "f",
-        "kind": "Fn"
-      },
-      {
-        "idx": 2,
-        "name": "SecretRegion",
-        "kind": "Struct"
+    "0": {
+      "subitems": [
+        {
+          "idx": 1,
+          "name": "f",
+          "kind": "Fn"
+        },
+        {
+          "idx": 2,
+          "name": "SecretRegion",
+          "kind": "Struct"
+        }
+      ],
+      "groups": {
+        "Fn": [
+          1
+        ],
+        "Struct": [
+          2
+        ]
       }
-    ],
-    "2": [
-      {
-        "idx": 3,
-        "name": "from",
-        "kind": "AssocFn"
-      },
-      {
-        "idx": 4,
-        "name": "set_len",
-        "kind": "AssocFn"
-      },
-      {
-        "idx": 5,
-        "name": "xor_secret_region",
-        "kind": "AssocFn"
+    },
+    "2": {
+      "subitems": [
+        {
+          "idx": 3,
+          "name": "from",
+          "kind": "AssocFn"
+        },
+        {
+          "idx": 4,
+          "name": "set_len",
+          "kind": "AssocFn"
+        },
+        {
+          "idx": 5,
+          "name": "xor_secret_region",
+          "kind": "AssocFn"
+        }
+      ],
+      "groups": {
+        "AssocFn": [
+          3,
+          4,
+          5
+        ]
       }
-    ]
+    }
   },
   "name_to_path": {
     "poc::SecretRegion": 2,

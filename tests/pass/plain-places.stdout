@@ -185,23 +185,36 @@
     ]
   ],
   "navi": {
-    "0": [
-      {
-        "idx": 1,
-        "name": "main",
-        "kind": "Fn"
-      },
-      {
-        "idx": 2,
-        "name": "S",
-        "kind": "Struct"
-      },
-      {
-        "idx": 3,
-        "name": "E",
-        "kind": "Enum"
+    "0": {
+      "subitems": [
+        {
+          "idx": 1,
+          "name": "main",
+          "kind": "Fn"
+        },
+        {
+          "idx": 2,
+          "name": "S",
+          "kind": "Struct"
+        },
+        {
+          "idx": 3,
+          "name": "E",
+          "kind": "Enum"
+        }
+      ],
+      "groups": {
+        "Fn": [
+          1
+        ],
+        "Struct": [
+          2
+        ],
+        "Enum": [
+          3
+        ]
       }
-    ]
+    }
   },
   "name_to_path": {
     "plain_places::main": 1,
