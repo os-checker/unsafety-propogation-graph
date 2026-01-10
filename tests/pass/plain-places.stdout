@@ -186,9 +186,21 @@
   ],
   "navi": {
     "0": [
-      1,
-      2,
-      3
+      {
+        "idx": 1,
+        "name": "main",
+        "kind": "Fn"
+      },
+      {
+        "idx": 2,
+        "name": "S",
+        "kind": "Struct"
+      },
+      {
+        "idx": 3,
+        "name": "E",
+        "kind": "Enum"
+      }
     ]
   },
   "name_to_path": {

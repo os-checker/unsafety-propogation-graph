@@ -165,11 +165,23 @@
   ],
   "navi": {
     "0": [
-      1,
-      2
+      {
+        "idx": 1,
+        "name": "a",
+        "kind": "Fn"
+      },
+      {
+        "idx": 2,
+        "name": "S",
+        "kind": "Struct"
+      }
     ],
     "2": [
-      3
+      {
+        "idx": 3,
+        "name": "new",
+        "kind": "AssocFn"
+      }
     ]
   },
   "name_to_path": {

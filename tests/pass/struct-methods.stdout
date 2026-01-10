@@ -320,15 +320,43 @@
   ],
   "navi": {
     "0": [
-      1
+      {
+        "idx": 1,
+        "name": "S",
+        "kind": "Struct"
+      }
     ],
     "1": [
-      2,
-      3,
-      4,
-      5,
-      6,
-      7
+      {
+        "idx": 2,
+        "name": "field_mut_ref",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 3,
+        "name": "field_ref",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 4,
+        "name": "new",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 5,
+        "name": "s_mut_ref",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 6,
+        "name": "s_ref",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 7,
+        "name": "write_field",
+        "kind": "AssocFn"
+      }
     ]
   },
   "name_to_path": {

@@ -64,8 +64,16 @@
   ],
   "navi": {
     "0": [
-      1,
-      2
+      {
+        "idx": 1,
+        "name": "a",
+        "kind": "Fn"
+      },
+      {
+        "idx": 2,
+        "name": "b",
+        "kind": "Fn"
+      }
     ]
   },
   "name_to_path": {

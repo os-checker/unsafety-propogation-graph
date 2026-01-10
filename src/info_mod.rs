@@ -27,7 +27,16 @@ impl Navigation {
 
 pub type ItemPath = Vec<DefPath>;
 pub type FlattenFreeItems = Vec<ItemPath>;
-pub type Navi = FxIndexMap<usize, Vec<usize>>;
+pub type Navi = FxIndexMap<usize, Vec<NaviItem>>;
+
+#[derive(Debug, Serialize)]
+pub struct NaviItem {
+    /// Data idx.
+    idx: usize,
+    /// Item name without parent path.
+    name: Box<str>,
+    kind: DefPathKind,
+}
 
 fn to_navi(
     v_path: &mut FlattenFreeItems,
@@ -99,12 +108,22 @@ fn to_navi(
     }
 
     let mut navi = Navi::default();
-    for current_meta in map_paths.values() {
+    for (current_item, current_meta) in &map_paths {
         for parent_path in current_meta.parent_paths.values() {
             let parent_meta = map_paths.get(parent_path).unwrap();
-            navi.entry(parent_meta.item_idx)
-                .and_modify(|v| v.push(current_meta.item_idx))
-                .or_insert_with(|| vec![current_meta.item_idx]);
+
+            let navi_item = &current_item[parent_path.len()];
+            let navi_item = NaviItem {
+                idx: current_meta.item_idx,
+                name: navi_item.name.clone(),
+                kind: navi_item.kind,
+            };
+
+            if let Some(v) = navi.get_mut(&parent_meta.item_idx) {
+                v.push(navi_item);
+            } else {
+                navi.insert(parent_meta.item_idx, vec![navi_item]);
+            }
         }
     }
 

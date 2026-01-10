@@ -507,13 +507,33 @@
   ],
   "navi": {
     "0": [
-      1,
-      2
+      {
+        "idx": 1,
+        "name": "f",
+        "kind": "Fn"
+      },
+      {
+        "idx": 2,
+        "name": "SecretRegion",
+        "kind": "Struct"
+      }
     ],
     "2": [
-      3,
-      4,
-      5
+      {
+        "idx": 3,
+        "name": "from",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 4,
+        "name": "set_len",
+        "kind": "AssocFn"
+      },
+      {
+        "idx": 5,
+        "name": "xor_secret_region",
+        "kind": "AssocFn"
+      }
     ]
   },
   "name_to_path": {
