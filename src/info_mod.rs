@@ -136,9 +136,12 @@ fn to_navi(
 
     // Group sub navi items.
     for navi_item in navi.values_mut() {
-        let groups = navi_item.subitems.iter().group_by(|item| item.kind);
-        for (kind, item) in groups.into_iter() {
-            navi_item.groups.insert(kind, item.map(|v| v.idx).collect());
+        let subitems = navi_item.subitems.iter().enumerate();
+        for (kind, iter) in subitems.group_by(|(_, item)| item.kind).into_iter() {
+            // NOTE: sub item idx are inserted.
+            navi_item
+                .groups
+                .insert(kind, iter.map(|(sub_idx, _)| sub_idx).collect());
         }
     }
 
