@@ -5,5 +5,16 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui'],
   css: ['~/assets/css/main.css'],
   sourcemap: { server: false, client: false, },
+  icon: {
+    serverBundle: { collections: ['codicon'] },
+    clientBundle: {
+      // https://icones.js.org/collection/codicon
+      icons: [
+        'codicon:symbol-structure',
+        'codicon:symbol-method',
+        'codicon:symbol-class',
+      ],
+    }
+  },
   // devtools: { enabled: true }
 })

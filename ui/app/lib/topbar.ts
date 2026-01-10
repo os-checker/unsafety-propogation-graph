@@ -26,9 +26,12 @@ export type DefPath = {
   name: string,
 }
 export type ItemPath = DefPath[];
+export type NaviItem = {
+  idx: number, name: string, kind: DefPathKind,
+}
 export type Navigation = {
   data: ItemPath[],
-  navi: { [key: number]: number[] },
+  navi: { [key: number]: NaviItem[] },
   name_to_path: { [key: string]: number },
   path_to_name: { [key: number]: string },
 }

@@ -18,6 +18,7 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@iconify-json/codicon": "^1.2.39",
     "@shikijs/markdown-it": "^3.20.0",
     "shiki": "^3.20.0",
     "typescript": "^5.9.3"
